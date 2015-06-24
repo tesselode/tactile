@@ -1,10 +1,11 @@
 function love.load (args)
   input = require 'input'
 
-  input:addGamepadButtonDetector('gamepadShoot', 'a', 1)
+  input:addGamepadButtonDetector('gamepadShoot', 'a', 2)
   input:addKeyboardButtonDetector('keyboardShoot', 'x')
   input:addMouseButtonDetector('mouseShoot', 'l')
-  input:addButton('shoot', {'gamepadShoot', 'keyboardShoot', 'mouseShoot'})
+  input:addAxisButtonDetector('arbitraryShoot', 'leftx', -.5, 1)
+  input:addButton('shoot', {'gamepadShoot', 'keyboardShoot', 'mouseShoot', 'arbitraryShoot'})
 end
 
 function love.update (dt)

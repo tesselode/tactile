@@ -63,7 +63,9 @@ function input:addGamepadButtonDetector (name, button, joystickNum)
   detector.joysticks = self.joysticks
 
   function detector:update ()
-    self.current = self.joysticks[self.joystickNum]:isGamepadDown(self.button)
+    if self.joysticks[self.joystickNum] then
+      self.current = self.joysticks[self.joystickNum]:isGamepadDown(self.button)
+    end
   end
 
   return detector
@@ -78,8 +80,10 @@ function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
   detector.joystickNum = joystickNum
 
   function detector:update ()
-    local axisValue = self.joysticks[self.joystickNum]:getGamepadAxis(axis)
-    detector.current = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
+    if self.joysticks[self.joystickNum] then
+      local axisValue = self.joysticks[self.joystickNum]:getGamepadAxis(axis)
+      detector.current = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
+    end
   end
 
   return detector
@@ -143,7 +147,9 @@ function input:addAnalogAxisDetector (name, axis, joystickNum)
   axisDetector.joysticks = self.joysticks
 
   function axisDetector:update ()
-    self.value = self.joysticks[joystickNum]:getGamepadAxis(self.axis)
+    if self.joysticks[self.joystickNum] then
+      self.value = self.joysticks[self.joystickNum]:getGamepadAxis(self.axis)
+    end
   end
 
   return axisDetector
