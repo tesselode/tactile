@@ -85,4 +85,11 @@ function input:update ()
   end
 end
 
+--functions to access buttons
+function input:isDown (button) return self.buttons[button].current end
+
+function input:pressed (button) return self.buttons[button].pressed end
+
+function input:released (button) return self.buttons[button].released end
+
 return input

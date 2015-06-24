@@ -8,10 +8,22 @@ end
 
 function love.update (dt)
   input:update(dt)
+
+  if input:pressed('horizontal') then
+    print('pressed')
+  end
+  if input:released('horizontal') then
+    print('released')
+  end
 end
 
 function love.keypressed (key)
   if key == 'escape' then
     love.event.quit()
   end
+end
+
+function love.draw ()
+  love.graphics.setColor(255, 255, 255, 255)
+  love.graphics.print(tostring(input:isDown('horizontal')))
 end
