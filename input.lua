@@ -1,7 +1,10 @@
 local input = {}
-input.detectors = {}
-input.buttons = {}
+
 input.joysticks = love.joystick.getJoysticks()
+input.deadzone = 0.25
+
+input.buttonDetectors = {}
+input.buttons = {}
 
 --general detector class
 function input:addDetector (name)
@@ -21,7 +24,7 @@ function input:addDetector (name)
     detector.released = detector.prev and not detector.current
   end
 
-  self.detectors[name] = detector
+  self.buttonDetectors[name] = detector
   return(detector)
 end
 
@@ -34,7 +37,7 @@ function input:addKeyDetector (name, key)
     detector.current = love.keyboard.isDown(detector.key)
   end
 
-  self.detectors[name] = detector
+  self.buttonDetectors[name] = detector
   return detector
 end
 
@@ -59,7 +62,7 @@ function input:addButton (name, detectors)
   local button = {}
   button.detectors = {}
   for k, v in pairs(detectors) do
-    table.insert(button.detectors, input.detectors[v])
+    table.insert(button.detectors, input.buttonDetectors[v])
   end
 
   button.prev = false
@@ -90,7 +93,7 @@ end
 
 function input:update ()
   --update detectors
-  for k, v in pairs(self.detectors) do
+  for k, v in pairs(self.buttonDetectors) do
     v:preUpdate()
     v:update()
     v:postUpdate()
