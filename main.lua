@@ -1,18 +1,18 @@
 function love.load (args)
   require 'input'
 
-  test = keyDetector('left')
+  leftDetector = keyDetector('left')
+  rightDetector = keyDetector('right')
+  horizontalButton = button({leftDetector, rightDetector})
 end
 
 function love.update (dt)
-  test:preUpdate()
-  test:update()
-  test:postUpdate()
+  horizontalButton:update()
 
-  if test.pressed then
+  if horizontalButton.pressed then
     print 'pressed'
   end
-  if test.released then
+  if horizontalButton.released then
     print 'released'
   end
 end
@@ -25,5 +25,5 @@ end
 
 function love.draw ()
   love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.print(tostring(test.current))
+  love.graphics.print(tostring(horizontalButton.current))
 end
