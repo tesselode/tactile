@@ -1,3 +1,5 @@
+--This is just for testing! You can safely ignore this.
+
 function love.load (args)
   input = require 'input'
 
