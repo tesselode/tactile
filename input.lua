@@ -1,62 +1,88 @@
-function detector ()
-  local self = {}
-  self.prev = false
-  self.current = false
+local input = {}
+input.detectors = {}
+input.buttons = {}
 
-  function self:preUpdate ()
-    self.prev = self.current
+--general detector class
+function input:addDetector (name)
+  local detector = {}
+  detector.prev = false
+  detector.current = false
+
+  function detector:preUpdate ()
+    detector.prev = detector.current
   end
 
-  function self:update () end
+  function detector:update () end
 
-  function self:postUpdate ()
-    self.pressed = self.current and not self.prev
-    self.released = self.prev and not self.current
+  function detector:postUpdate ()
+    --detect pressed/released
+    detector.pressed = detector.current and not detector.prev
+    detector.released = detector.prev and not detector.current
   end
 
-  return self
+  self.detectors[name] = detector
+  return(detector)
 end
 
-function keyDetector (key)
-  local self = detector()
-  self.key = key
+--detects if a keyboard key is down/pressed/released
+function input:addKeyDetector (name, key)
+  local detector = input:addDetector(name)
+  detector.key = key
 
-  function self:update ()
-    self.current = love.keyboard.isDown(self.key)
+  function detector:update ()
+    detector.current = love.keyboard.isDown(detector.key)
   end
 
-  return self
+  self.detectors[name] = detector
+  return detector
 end
 
-function button (detectors)
-  local self = {}
-  self.detectors = detectors or {}
-  self.prev = false
-  self.current = false
-
-  function self:addDetector (detector)
-    table.insert(self.detectors, detector)
+--holds detectors
+function input:addButton (name, detectors)
+  local button = {}
+  button.detectors = {}
+  for k, v in pairs(detectors) do
+    table.insert(button.detectors, input.detectors[v])
   end
 
-  function self:update ()
-    self.prev = self.current
-    self.current = false
-    
-    for k, v in pairs(self.detectors) do
-      --update detector
-      v:preUpdate()
-      v:update()
-      v:postUpdate()
+  button.prev = false
+  button.current = false
 
+  function button:addDetector (detector)
+    table.insert(button.detectors, detector)
+  end
+
+  function button:update ()
+    button.prev = button.current
+    button.current = false
+
+    for k, v in pairs(button.detectors) do
       --trigger the button if any of the detectors are triggered
       if v.current then
-        self.current = true
+        button.current = true
       end
     end
 
-    self.pressed = self.current and not self.prev
-    self.released = self.prev and not self.current
+    button.pressed = button.current and not button.prev
+    button.released = button.prev and not button.current
   end
 
-  return self
+  self.buttons[name] = button
+  return button
 end
+
+function input:update ()
+  --update detectors
+  for k, v in pairs(self.detectors) do
+    v:preUpdate()
+    v:update()
+    v:postUpdate()
+  end
+
+  --update buttons
+  for k, v in pairs(self.buttons) do
+    v:update()
+  end
+end
+
+return input
