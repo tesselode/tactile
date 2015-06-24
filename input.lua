@@ -1,6 +1,7 @@
 local input = {}
 input.detectors = {}
 input.buttons = {}
+input.joysticks = love.joystick.getJoysticks()
 
 --general detector class
 function input:addDetector (name)
@@ -34,6 +35,22 @@ function input:addKeyDetector (name, key)
   end
 
   self.detectors[name] = detector
+  return detector
+end
+
+--detects if a joystick axis passes a certain threshold
+function input:addBinaryAxisDetector (name, axis, threshold, joystickNum)
+  local detector = input:addDetector(name)
+  detector.axis = axis
+  detector.threshold = threshold
+  detector.joysticks = self.joysticks
+  detector.joystickNum = joystickNum
+
+  function detector:update ()
+    local axisValue = self.joysticks[self.joystickNum]:getGamepadAxis(axis)
+    detector.current = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
+  end
+
   return detector
 end
 
@@ -91,5 +108,10 @@ function input:isDown (button) return self.buttons[button].current end
 function input:pressed (button) return self.buttons[button].pressed end
 
 function input:released (button) return self.buttons[button].released end
+
+--refreshes the joysticks list
+function input:getJoysticks ()
+  self.joysticks = love.joystick.getJoysticks()
+end
 
 return input
