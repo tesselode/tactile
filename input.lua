@@ -6,8 +6,11 @@ input.deadzone = 0.25
 input.buttonDetectors = {}
 input.buttons = {}
 
---general detector class
-function input:addDetector (name)
+input.axisDetectors = {}
+input.axes = {}
+
+--general button detector class
+function input:addButtonDetector (name)
   local detector = {}
   detector.prev = false
   detector.current = false
@@ -30,20 +33,19 @@ end
 
 --detects if a keyboard key is down/pressed/released
 function input:addKeyDetector (name, key)
-  local detector = input:addDetector(name)
+  local detector = input:addButtonDetector(name)
   detector.key = key
 
   function detector:update ()
     detector.current = love.keyboard.isDown(detector.key)
   end
 
-  self.buttonDetectors[name] = detector
   return detector
 end
 
 --detects if a joystick axis passes a certain threshold
 function input:addBinaryAxisDetector (name, axis, threshold, joystickNum)
-  local detector = input:addDetector(name)
+  local detector = input:addButtonDetector(name)
   detector.axis = axis
   detector.threshold = threshold
   detector.joysticks = self.joysticks
@@ -68,10 +70,6 @@ function input:addButton (name, detectors)
   button.prev = false
   button.current = false
 
-  function button:addDetector (detector)
-    table.insert(button.detectors, detector)
-  end
-
   function button:update ()
     button.prev = button.current
     button.current = false
@@ -91,6 +89,85 @@ function input:addButton (name, detectors)
   return button
 end
 
+--general axis detector
+function input:addAxisDetector (name)
+  local axisDetector = {}
+  axisDetector.value = 0
+  axisDetector.parent = self
+
+  function axisDetector:getValue ()
+    if math.abs(self.value) > self.parent.deadzone then
+      return self.value
+    else
+      return 0
+    end
+  end
+
+  function axisDetector:update () end
+
+  self.axisDetectors[name] = axisDetector
+  return axisDetector
+end
+
+--joystick axis detector
+function input:addJoystickAxisDetector (name, axis, joystickNum)
+  local axisDetector = input:addAxisDetector(name)
+  axisDetector.axis = axis
+  axisDetector.joystickNum = joystickNum
+  axisDetector.joysticks = self.joysticks
+
+  function axisDetector:update ()
+    self.value = self.joysticks[joystickNum]:getGamepadAxis(self.axis)
+  end
+
+  return axisDetector
+end
+
+--keyboard axis detector
+function input:addKeyAxisDetector (name, negative, positive)
+  local axisDetector = input:addAxisDetector(name)
+  axisDetector.negative = self.buttonDetectors[negative]
+  axisDetector.positive = self.buttonDetectors[positive]
+
+  function axisDetector:update ()
+    if self.negative.current and self.positive.current then
+      self.value = 0
+    elseif self.negative.current then
+      self.value = -1
+    elseif self.positive.current then
+      self.value = 1
+    else
+      self.value = 0
+    end
+  end
+
+  return axisDetector
+end
+
+--holds axis detectors
+function input:addAxis (name, detectors)
+  local axis = {}
+  axis.detectors = {}
+  for k, v in pairs(detectors) do
+    table.insert(axis.detectors, input.axisDetectors[v])
+  end
+
+  axis.value = 0
+
+  function axis:update ()
+    axis.value = 0
+
+    for i = 1, #self.detectors do
+      if self.detectors[i]:getValue() ~= 0 then
+        self.value = self.detectors[i]:getValue()
+      end
+    end
+  end
+
+  self.axes[name] = axis
+  return axis
+end
+
 function input:update ()
   --update detectors
   for k, v in pairs(self.buttonDetectors) do
@@ -99,18 +176,29 @@ function input:update ()
     v:postUpdate()
   end
 
+  for k, v in pairs(self.axisDetectors) do
+    v:update()
+  end
+
   --update buttons
   for k, v in pairs(self.buttons) do
     v:update()
   end
+
+  --update axes
+  for k, v in pairs(self.axes) do
+    v:update()
+  end
 end
 
---functions to access buttons
+--access functions
 function input:isDown (button) return self.buttons[button].current end
 
 function input:pressed (button) return self.buttons[button].pressed end
 
 function input:released (button) return self.buttons[button].released end
+
+function input:getAxis (axis) return self.axes[axis].value end
 
 --refreshes the joysticks list
 function input:getJoysticks ()
