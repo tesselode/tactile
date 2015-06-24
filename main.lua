@@ -1,23 +1,18 @@
 function love.load (args)
   input = require 'input'
 
-  input:addKeyboardButtonDetector('leftKey', 'left')
-  input:addKeyboardButtonDetector('rightKey', 'right')
-  input:addAxisButtonDetector('leftAxisLeft', 'leftx', -.5, 1)
-  input:addButton('leftButton', {'leftKey', 'leftAxisLeft'})
-
-  input:addAnalogAxisDetector('leftStickX', 'leftx', 1)
-  input:addBinaryAxisDetector('arrowKeysX', 'leftKey', 'rightKey')
-  input:addAxis('horizontal', {'leftStickX', 'arrowKeysX'})
+  input:addGamepadButtonDetector('gamepadShoot', 'a', 1)
+  input:addKeyboardButtonDetector('keyboardShoot', 'x')
+  input:addButton('shoot', {'gamepadShoot', 'keyboardShoot'})
 end
 
 function love.update (dt)
   input:update(dt)
 
-  if input:pressed('leftButton') then
+  if input:pressed('shoot') then
     print('pressed')
   end
-  if input:released('leftButton') then
+  if input:released('shoot') then
     print('released')
   end
 end
@@ -30,6 +25,5 @@ end
 
 function love.draw ()
   love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.print(tostring(input:isDown('leftButton')))
-  love.graphics.print(tostring(input:getAxis('horizontal')), 0, 10)
+  love.graphics.print(tostring(input:isDown('shoot')))
 end

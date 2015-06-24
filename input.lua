@@ -23,8 +23,8 @@ function input:addButtonDetector (name)
 
   function detector:postUpdate ()
     --detect pressed/released
-    detector.pressed = detector.current and not detector.prev
-    detector.released = detector.prev and not detector.current
+    self.pressed = self.current and not self.prev
+    self.released = self.prev and not self.current
   end
 
   self.buttonDetectors[name] = detector
@@ -37,7 +37,21 @@ function input:addKeyboardButtonDetector (name, key)
   detector.key = key
 
   function detector:update ()
-    detector.current = love.keyboard.isDown(detector.key)
+    self.current = love.keyboard.isDown(self.key)
+  end
+
+  return detector
+end
+
+--detects if a gamepad button is down/pressed/released
+function input:addGamepadButtonDetector (name, button, joystickNum)
+  local detector = input:addButtonDetector(name)
+  detector.button = button
+  detector.joystickNum = joystickNum
+  detector.joysticks = self.joysticks
+
+  function detector:update ()
+    self.current = self.joysticks[self.joystickNum]:isGamepadDown(self.button)
   end
 
   return detector
