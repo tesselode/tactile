@@ -3,7 +3,8 @@ function love.load (args)
 
   input:addGamepadButtonDetector('gamepadShoot', 'a', 1)
   input:addKeyboardButtonDetector('keyboardShoot', 'x')
-  input:addButton('shoot', {'gamepadShoot', 'keyboardShoot'})
+  input:addMouseButtonDetector('mouseShoot', 'l')
+  input:addButton('shoot', {'gamepadShoot', 'keyboardShoot', 'mouseShoot'})
 end
 
 function love.update (dt)

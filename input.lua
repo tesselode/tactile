@@ -43,6 +43,18 @@ function input:addKeyboardButtonDetector (name, key)
   return detector
 end
 
+--detects if a mouse button is down/pressed/released
+function input:addMouseButtonDetector (name, button)
+  local detector = input:addButtonDetector(name)
+  detector.button = button
+
+  function detector:update ()
+    self.current = love.mouse.isDown(self.button)
+  end
+
+  return detector
+end
+
 --detects if a gamepad button is down/pressed/released
 function input:addGamepadButtonDetector (name, button, joystickNum)
   local detector = input:addButtonDetector(name)
