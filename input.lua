@@ -32,7 +32,7 @@ function input:addButtonDetector (name)
 end
 
 --detects if a keyboard key is down/pressed/released
-function input:addKeyDetector (name, key)
+function input:addKeyboardButtonDetector (name, key)
   local detector = input:addButtonDetector(name)
   detector.key = key
 
@@ -44,7 +44,7 @@ function input:addKeyDetector (name, key)
 end
 
 --detects if a joystick axis passes a certain threshold
-function input:addBinaryAxisDetector (name, axis, threshold, joystickNum)
+function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
   local detector = input:addButtonDetector(name)
   detector.axis = axis
   detector.threshold = threshold
@@ -110,7 +110,7 @@ function input:addAxisDetector (name)
 end
 
 --joystick axis detector
-function input:addJoystickAxisDetector (name, axis, joystickNum)
+function input:addAnalogAxisDetector (name, axis, joystickNum)
   local axisDetector = input:addAxisDetector(name)
   axisDetector.axis = axis
   axisDetector.joystickNum = joystickNum
@@ -124,7 +124,7 @@ function input:addJoystickAxisDetector (name, axis, joystickNum)
 end
 
 --keyboard axis detector
-function input:addKeyAxisDetector (name, negative, positive)
+function input:addBinaryAxisDetector (name, negative, positive)
   local axisDetector = input:addAxisDetector(name)
   axisDetector.negative = self.buttonDetectors[negative]
   axisDetector.positive = self.buttonDetectors[positive]

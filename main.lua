@@ -1,13 +1,13 @@
 function love.load (args)
   input = require 'input'
 
-  input:addKeyDetector('leftKey', 'left')
-  input:addKeyDetector('rightKey', 'right')
-  input:addBinaryAxisDetector('leftAxisLeft', 'leftx', -.5, 1)
+  input:addKeyboardButtonDetector('leftKey', 'left')
+  input:addKeyboardButtonDetector('rightKey', 'right')
+  input:addAxisButtonDetector('leftAxisLeft', 'leftx', -.5, 1)
   input:addButton('leftButton', {'leftKey', 'leftAxisLeft'})
 
-  input:addJoystickAxisDetector('leftStickX', 'leftx', 1)
-  input:addKeyAxisDetector('arrowKeysX', 'leftKey', 'rightKey')
+  input:addAnalogAxisDetector('leftStickX', 'leftx', 1)
+  input:addBinaryAxisDetector('arrowKeysX', 'leftKey', 'rightKey')
   input:addAxis('horizontal', {'leftStickX', 'arrowKeysX'})
 end
 
