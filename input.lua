@@ -15,16 +15,8 @@ function input:addButtonDetector (name)
   detector.prev = false
   detector.current = false
 
-  function detector:preUpdate ()
+  function detector:update ()
     detector.prev = detector.current
-  end
-
-  function detector:update () end
-
-  function detector:postUpdate ()
-    --detect pressed/released
-    self.pressed = self.current and not self.prev
-    self.released = self.prev and not self.current
   end
 
   self.buttonDetectors[name] = detector
@@ -36,7 +28,10 @@ function input:addKeyboardButtonDetector (name, key)
   local detector = input:addButtonDetector(name)
   detector.key = key
 
+  local parentUpdate = detector.update
   function detector:update ()
+    parentUpdate(self)
+
     self.current = love.keyboard.isDown(self.key)
   end
 
@@ -48,7 +43,10 @@ function input:addMouseButtonDetector (name, button)
   local detector = input:addButtonDetector(name)
   detector.button = button
 
+  local parentUpdate = detector.update
   function detector:update ()
+    parentUpdate(self)
+
     self.current = love.mouse.isDown(self.button)
   end
 
@@ -62,7 +60,10 @@ function input:addGamepadButtonDetector (name, button, joystickNum)
   detector.joystickNum = joystickNum
   detector.joysticks = self.joysticks
 
+  local parentUpdate = detector.update
   function detector:update ()
+    parentUpdate(self)
+
     if self.joysticks[self.joystickNum] then
       self.current = self.joysticks[self.joystickNum]:isGamepadDown(self.button)
     end
@@ -79,7 +80,10 @@ function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
   detector.joysticks = self.joysticks
   detector.joystickNum = joystickNum
 
+  local parentUpdate = detector.update
   function detector:update ()
+    parentUpdate(self)
+
     if self.joysticks[self.joystickNum] then
       local axisValue = self.joysticks[self.joystickNum]:getGamepadAxis(axis)
       detector.current = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
@@ -201,13 +205,12 @@ function input:addAxis (name, detectors)
 end
 
 function input:update ()
-  --update detectors
+  --update button detectors
   for k, v in pairs(self.buttonDetectors) do
-    v:preUpdate()
     v:update()
-    v:postUpdate()
   end
 
+  --update axis detectors
   for k, v in pairs(self.axisDetectors) do
     v:update()
   end
