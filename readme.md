@@ -91,6 +91,12 @@ Adds a button detector that is triggered when an axis on a gamepad passes a cert
 - `threshold` is the value the axis has to reach for an input to be registered. If the threshold is positive, the value will have to be greater than the threshold. If the threshold is negative, the value will have to be smaller.
 - `joystickNum` is the joystick to check for input on.
 
+`input:removeButtonDetector(name)`
+
+Removes a button detector.
+
+- `name` is the name of the button detector.
+
 ### Buttons
 
 `input:addButton(name, detectors)`
@@ -99,6 +105,14 @@ Adds a button.
 
 - `name` is the name of the button.
 - `detectors` is a table containing the names of all the button detectors that should activate this button.
+
+`input:removeButton(name)`
+
+Removes a button.
+
+- `name` is the name of the button.
+
+__Note:__ be careful when removing buttons! If another piece of code is still using them, the game will crash.
 
 ### Axis detectors
 
@@ -120,6 +134,12 @@ Adds an axis detector that always has a value of -1, 0, or 1 based on the state 
 - `negative` is the name of a button detector. This will be assigned to the negative side.
 - `positive` is the name of a button detector. This will be assigned to the positive side.
 
+`input:removeAxisDetector(name)`
+
+Removes an axis detector.
+
+- `name` is the name of the axis detector.
+
 ### Axes
 
 `input:addAxis(name, detectors)`
@@ -129,3 +149,11 @@ Adds an axis.
 - `name` is the name of the axis.
 - `detectors` is a table containing the names of all the axis detectors that the axis should use.
   - Note: the last axis detector in the list will take precedence! So if you want one control method to override the other, place it last in the list.
+
+`input:removeAxis(name)`
+
+Removes a axis.
+
+- `name` is the name of the axis.
+
+__Note:__ be careful when removing axes! If another piece of code is still using them, the game will crash.
