@@ -25,6 +25,9 @@ end
 
 --detects if a keyboard key is down/pressed/released
 function input:addKeyboardButtonDetector (name, key)
+  assert(name, 'name is nil')
+  assert(type(key) == 'string', 'key is not a KeyConstant')
+
   local detector = input:addButtonDetector(name)
   detector.key = key
 
@@ -40,6 +43,9 @@ end
 
 --detects if a mouse button is down/pressed/released
 function input:addMouseButtonDetector (name, button)
+  assert(name, 'name is nil')
+  assert(type(button) == 'string', 'button is not a MouseConstant')
+
   local detector = input:addButtonDetector(name)
   detector.button = button
 
@@ -55,6 +61,10 @@ end
 
 --detects if a gamepad button is down/pressed/released
 function input:addGamepadButtonDetector (name, button, joystickNum)
+  assert(name, 'name is nil')
+  assert(type(button) == 'string', 'button is not a GamepadButton')
+  assert(type(joystickNum) == 'number', 'joystickNum is not a number')
+
   local detector = input:addButtonDetector(name)
   detector.button = button
   detector.joystickNum = joystickNum
@@ -74,6 +84,10 @@ end
 
 --detects if a joystick axis passes a certain threshold
 function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
+  assert(name, 'name is nil')
+  assert(type(axis) == 'string', 'axis is not a GamepadAxis')
+  assert(type(joystickNum) == 'number', 'joystickNum is not a number')
+
   local detector = input:addButtonDetector(name)
   detector.axis = axis
   detector.threshold = threshold
@@ -95,11 +109,16 @@ end
 
 --removes a button detector
 function input:removeButtonDetector (name)
+  assert(name, 'name is nil')
+
   self.buttonDetectors[name] = nil
 end
 
 --holds detectors
 function input:addButton (name, detectors)
+  assert(name, 'name is nil')
+  assert(type(detectors) == 'table', 'detectors is not a table')
+
   local button = {}
   button.detectors = {}
   for k, v in pairs(detectors) do
@@ -131,11 +150,15 @@ end
 
 --removes a button
 function input:removeButton (name)
+  assert(name, 'name is nil')
+
   self.buttons[name] = nil
 end
 
 --general axis detector
 function input:addAxisDetector (name)
+  assert(name, 'name is nil')
+
   local axisDetector = {}
   axisDetector.value = 0
   axisDetector.parent = self
@@ -156,6 +179,10 @@ end
 
 --joystick axis detector
 function input:addAnalogAxisDetector (name, axis, joystickNum)
+  assert(name, 'name is nil')
+  assert(type(axis) == 'string', 'axis is not a GamepadAxis')
+  assert(type(joystickNum) == 'number', 'joystickNum is not a number')
+
   local axisDetector = input:addAxisDetector(name)
   axisDetector.axis = axis
   axisDetector.joystickNum = joystickNum
@@ -172,6 +199,10 @@ end
 
 --keyboard axis detector
 function input:addBinaryAxisDetector (name, negative, positive)
+  assert(name, 'name is nil')
+  assert(negative, 'negative is nil')
+  assert(positive, 'positive is nil')
+
   local axisDetector = input:addAxisDetector(name)
   axisDetector.negative = self.buttonDetectors[negative]
   axisDetector.positive = self.buttonDetectors[positive]
@@ -193,11 +224,15 @@ end
 
 --removes an axis detector
 function input:removeAxisDetector (name)
+  assert(name, 'name is nil')
+
   self.axisDetectors[name] = nil
 end
 
 --holds axis detectors
 function input:addAxis (name, detectors)
+  assert(name, 'name is nil')
+
   local axis = {}
   axis.detectors = {}
   for k, v in pairs(detectors) do
@@ -222,6 +257,8 @@ end
 
 --removes an axis
 function input:removeAxis (name)
+  assert(name, 'name is nil')
+
   self.axes[name] = nil
 end
 
@@ -248,13 +285,25 @@ function input:update ()
 end
 
 --access functions
-function input:isDown (button) return self.buttons[button].current end
+function input:isDown (button)
+  assert(button, 'button is nil')
+  return self.buttons[button].current
+end
 
-function input:pressed (button) return self.buttons[button].pressed end
+function input:pressed (button)
+  assert(button, 'button is nil')
+  return self.buttons[button].pressed
+end
 
-function input:released (button) return self.buttons[button].released end
+function input:released (button)
+  assert(button, 'button is nil')
+  return self.buttons[button].released
+end
 
-function input:getAxis (axis) return self.axes[axis].value end
+function input:getAxis (axis)
+  assert(axis, 'axis is nil')
+  return self.axes[axis].value
+end
 
 --refreshes the joysticks list
 function input:getJoysticks ()

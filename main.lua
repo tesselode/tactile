@@ -3,19 +3,13 @@
 function love.load (args)
   input = require 'tactile'
 
-  input:addKeyboardButtonDetector('keyboardShoot', 'x')
-  input:addButton('shoot', {'keyboardShoot'})
+  input:addKeyboardButtonDetector('keyboardLeft', 'left')
+  input:addMouseButtonDetector('leftClick', 'l')
+  input:addGamepadButtonDetector('gamepadA', 'a', 1)
 end
 
 function love.update (dt)
   input:update(dt)
-
-  if input:pressed('shoot') then
-    print('pressed')
-  end
-  if input:released('shoot') then
-    print('released')
-  end
 end
 
 function love.keypressed (key)
@@ -26,5 +20,4 @@ end
 
 function love.draw ()
   love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.print(tostring(input:isDown('shoot')))
 end
