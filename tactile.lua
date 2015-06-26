@@ -134,7 +134,6 @@ function input:addButton (name, detectors)
 
     for k, v in pairs(button.detectors) do
       --trigger the button if any of the detectors are triggered
-      print(v)
       if v.current then
         button.current = true
       end
