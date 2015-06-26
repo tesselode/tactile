@@ -93,12 +93,17 @@ function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
   return detector
 end
 
+--removes a button detector
+function input:removeButtonDetector (name)
+  self.buttonDetectors[name] = nil
+end
+
 --holds detectors
 function input:addButton (name, detectors)
   local button = {}
   button.detectors = {}
   for k, v in pairs(detectors) do
-    table.insert(button.detectors, input.buttonDetectors[v])
+    table.insert(button.detectors, self.buttonDetectors[v])
   end
 
   button.prev = false
@@ -110,6 +115,7 @@ function input:addButton (name, detectors)
 
     for k, v in pairs(button.detectors) do
       --trigger the button if any of the detectors are triggered
+      print(v)
       if v.current then
         button.current = true
       end
@@ -121,6 +127,11 @@ function input:addButton (name, detectors)
 
   self.buttons[name] = button
   return button
+end
+
+--removes a button
+function input:removeButton (name)
+  self.buttons[name] = nil
 end
 
 --general axis detector
@@ -180,12 +191,17 @@ function input:addBinaryAxisDetector (name, negative, positive)
   return axisDetector
 end
 
+--removes an axis detector
+function input:removeAxisDetector (name)
+  self.axisDetectors[name] = nil
+end
+
 --holds axis detectors
 function input:addAxis (name, detectors)
   local axis = {}
   axis.detectors = {}
   for k, v in pairs(detectors) do
-    table.insert(axis.detectors, input.axisDetectors[v])
+    table.insert(axis.detectors, self.axisDetectors[v])
   end
 
   axis.value = 0
@@ -202,6 +218,11 @@ function input:addAxis (name, detectors)
 
   self.axes[name] = axis
   return axis
+end
+
+--removes an axis
+function input:removeAxis (name)
+  self.axes[name] = nil
 end
 
 function input:update ()
