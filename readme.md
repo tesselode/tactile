@@ -40,7 +40,10 @@ end
 function love.update (dt)
   input.update()
 
+  --movement
   player.x += input.getAxis('horizontal') * player.speed * dt
+
+  --shooting
   if input.pressed('primary') then
     player:shoot()
   end
