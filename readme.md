@@ -18,32 +18,34 @@ Tactile is made up of four types of objects:
 
 Example
 -------
-    function love.load ()
-      input = require 'tactile'
+```lua
+function love.load ()
+  input = require 'tactile'
 
-      --button detectors
-      input.addKeyboardButtonDetector('keyboardX', 'x')
-      input.addKeyboardButtonDetector('keyboardLeft', 'left')
-      input.addKeyboardButtonDetector('keyboardRight', 'right')
-      input.addGamepadButtonDetector('gamepadA', 'a', 1)
+  --button detectors
+  input.addKeyboardButtonDetector('keyboardX', 'x')
+  input.addKeyboardButtonDetector('keyboardLeft', 'left')
+  input.addKeyboardButtonDetector('keyboardRight', 'right')
+  input.addGamepadButtonDetector('gamepadA', 'a', 1)
 
-      --axis detectors
-      input.addBinaryAxisDetector('keyboardXAxis', 'keyboardLeft', 'keyboardRight')
-      input.addAnalogAxisDetector('gamepadXAxis', 'leftx', 1)
+  --axis detectors
+  input.addBinaryAxisDetector('keyboardXAxis', 'keyboardLeft', 'keyboardRight')
+  input.addAnalogAxisDetector('gamepadXAxis', 'leftx', 1)
 
-      --controls
-      input.addButton('primary', {'keyboardX', 'gamepadA'})
-      input.addAxis('horizontal', {'keyboardXAxis', 'gamepadXAxis'})
-    end
+  --controls
+  input.addButton('primary', {'keyboardX', 'gamepadA'})
+  input.addAxis('horizontal', {'keyboardXAxis', 'gamepadXAxis'})
+end
 
-    function love.update (dt)
-      input.update()
+function love.update (dt)
+  input.update()
 
-      player.x += input.getAxis('horizontal') * player.speed * dt
-      if input.pressed('primary') then
-        player:shoot()
-      end
-    end
+  player.x += input.getAxis('horizontal') * player.speed * dt
+  if input.pressed('primary') then
+    player:shoot()
+  end
+end
+```
 
 API
 ---
