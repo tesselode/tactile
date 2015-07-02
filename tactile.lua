@@ -10,12 +10,12 @@ input.axisDetectors = {}
 input.axes = {}
 
 --general button detector class
-function input:addButtonDetector (name)
+function input:addButtonDetector(name)
   local detector = {}
   detector.prev = false
   detector.current = false
 
-  function detector:update ()
+  function detector:update()
     detector.prev = detector.current
   end
 
@@ -24,7 +24,7 @@ function input:addButtonDetector (name)
 end
 
 --detects if a keyboard key is down/pressed/released
-function input:addKeyboardButtonDetector (name, key)
+function input:addKeyboardButtonDetector(name, key)
   assert(name, 'name is nil')
   assert(type(key) == 'string', 'key is not a KeyConstant')
 
@@ -32,7 +32,7 @@ function input:addKeyboardButtonDetector (name, key)
   detector.key = key
 
   local parentUpdate = detector.update
-  function detector:update ()
+  function detector:update()
     parentUpdate(self)
 
     self.current = love.keyboard.isDown(self.key)
@@ -42,7 +42,7 @@ function input:addKeyboardButtonDetector (name, key)
 end
 
 --detects if a mouse button is down/pressed/released
-function input:addMouseButtonDetector (name, button)
+function input:addMouseButtonDetector(name, button)
   assert(name, 'name is nil')
   assert(type(button) == 'string', 'button is not a MouseConstant')
 
@@ -50,7 +50,7 @@ function input:addMouseButtonDetector (name, button)
   detector.button = button
 
   local parentUpdate = detector.update
-  function detector:update ()
+  function detector:update()
     parentUpdate(self)
 
     self.current = love.mouse.isDown(self.button)
@@ -60,7 +60,7 @@ function input:addMouseButtonDetector (name, button)
 end
 
 --detects if a gamepad button is down/pressed/released
-function input:addGamepadButtonDetector (name, button, joystickNum)
+function input:addGamepadButtonDetector(name, button, joystickNum)
   assert(name, 'name is nil')
   assert(type(button) == 'string', 'button is not a GamepadButton')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
@@ -71,7 +71,7 @@ function input:addGamepadButtonDetector (name, button, joystickNum)
   detector.joysticks = self.joysticks
 
   local parentUpdate = detector.update
-  function detector:update ()
+  function detector:update()
     parentUpdate(self)
 
     if self.joysticks[self.joystickNum] then
@@ -83,7 +83,7 @@ function input:addGamepadButtonDetector (name, button, joystickNum)
 end
 
 --detects if a joystick axis passes a certain threshold
-function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
+function input:addAxisButtonDetector(name, axis, threshold, joystickNum)
   assert(name, 'name is nil')
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
@@ -95,7 +95,7 @@ function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
   detector.joystickNum = joystickNum
 
   local parentUpdate = detector.update
-  function detector:update ()
+  function detector:update()
     parentUpdate(self)
 
     if self.joysticks[self.joystickNum] then
@@ -108,14 +108,14 @@ function input:addAxisButtonDetector (name, axis, threshold, joystickNum)
 end
 
 --removes a button detector
-function input:removeButtonDetector (name)
+function input:removeButtonDetector(name)
   assert(name, 'name is nil')
 
   self.buttonDetectors[name] = nil
 end
 
 --holds detectors
-function input:addButton (name, detectors)
+function input:addButton(name, detectors)
   assert(name, 'name is nil')
   assert(type(detectors) == 'table', 'detectors is not a table')
 
@@ -128,7 +128,7 @@ function input:addButton (name, detectors)
   button.prev = false
   button.current = false
 
-  function button:update ()
+  function button:update()
     button.prev = button.current
     button.current = false
 
@@ -148,21 +148,21 @@ function input:addButton (name, detectors)
 end
 
 --removes a button
-function input:removeButton (name)
+function input:removeButton(name)
   assert(name, 'name is nil')
 
   self.buttons[name] = nil
 end
 
 --general axis detector
-function input:addAxisDetector (name)
+function input:addAxisDetector(name)
   assert(name, 'name is nil')
 
   local axisDetector = {}
   axisDetector.value = 0
   axisDetector.parent = self
 
-  function axisDetector:getValue ()
+  function axisDetector:getValue()
     if math.abs(self.value) > self.parent.deadzone then
       return self.value
     else
@@ -170,14 +170,14 @@ function input:addAxisDetector (name)
     end
   end
 
-  function axisDetector:update () end
+  function axisDetector:update() end
 
   self.axisDetectors[name] = axisDetector
   return axisDetector
 end
 
 --joystick axis detector
-function input:addAnalogAxisDetector (name, axis, joystickNum)
+function input:addAnalogAxisDetector(name, axis, joystickNum)
   assert(name, 'name is nil')
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
@@ -187,7 +187,7 @@ function input:addAnalogAxisDetector (name, axis, joystickNum)
   axisDetector.joystickNum = joystickNum
   axisDetector.joysticks = self.joysticks
 
-  function axisDetector:update ()
+  function axisDetector:update()
     if self.joysticks[self.joystickNum] then
       self.value = self.joysticks[self.joystickNum]:getGamepadAxis(self.axis)
     end
@@ -197,7 +197,7 @@ function input:addAnalogAxisDetector (name, axis, joystickNum)
 end
 
 --keyboard axis detector
-function input:addBinaryAxisDetector (name, negative, positive)
+function input:addBinaryAxisDetector(name, negative, positive)
   assert(name, 'name is nil')
   assert(negative, 'negative is nil')
   assert(positive, 'positive is nil')
@@ -206,7 +206,7 @@ function input:addBinaryAxisDetector (name, negative, positive)
   axisDetector.negative = self.buttonDetectors[negative]
   axisDetector.positive = self.buttonDetectors[positive]
 
-  function axisDetector:update ()
+  function axisDetector:update()
     if self.negative.current and self.positive.current then
       self.value = 0
     elseif self.negative.current then
@@ -222,14 +222,14 @@ function input:addBinaryAxisDetector (name, negative, positive)
 end
 
 --removes an axis detector
-function input:removeAxisDetector (name)
+function input:removeAxisDetector(name)
   assert(name, 'name is nil')
 
   self.axisDetectors[name] = nil
 end
 
 --holds axis detectors
-function input:addAxis (name, detectors)
+function input:addAxis(name, detectors)
   assert(name, 'name is nil')
 
   local axis = {}
@@ -240,7 +240,7 @@ function input:addAxis (name, detectors)
 
   axis.value = 0
 
-  function axis:update ()
+  function axis:update()
     axis.value = 0
 
     for i = 1, #self.detectors do
@@ -255,13 +255,13 @@ function input:addAxis (name, detectors)
 end
 
 --removes an axis
-function input:removeAxis (name)
+function input:removeAxis(name)
   assert(name, 'name is nil')
 
   self.axes[name] = nil
 end
 
-function input:update ()
+function input:update()
   --update button detectors
   for k, v in pairs(self.buttonDetectors) do
     v:update()
@@ -284,28 +284,28 @@ function input:update ()
 end
 
 --access functions
-function input:isDown (button)
+function input:isDown(button)
   assert(button, 'button is nil')
   return self.buttons[button].current
 end
 
-function input:pressed (button)
+function input:pressed(button)
   assert(button, 'button is nil')
   return self.buttons[button].pressed
 end
 
-function input:released (button)
+function input:released(button)
   assert(button, 'button is nil')
   return self.buttons[button].released
 end
 
-function input:getAxis (axis)
+function input:getAxis(axis)
   assert(axis, 'axis is nil')
   return self.axes[axis].value
 end
 
 --refreshes the joysticks list
-function input:getJoysticks ()
+function input:getJoysticks()
   self.joysticks = love.joystick.getJoysticks()
 end
 
