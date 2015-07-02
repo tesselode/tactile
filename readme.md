@@ -16,11 +16,40 @@ Tactile is made up of four types of objects:
 
 - **Axes** are controls that are set from -1 to 1 based on a set of axis detectors.
 
+Example
+-------
+    function love.load ()
+      input = require 'tactile'
+
+      --button detectors
+      input:addKeyboardButtonDetector('keyboardX', 'x')
+      input:addKeyboardButtonDetector('keyboardLeft', 'left')
+      input:addKeyboardButtonDetector('keyboardRight', 'right')
+      input:addGamepadButtonDetector('gamepadA', 'a', 1)
+
+      --axis detectors
+      input:addBinaryAxisDetector('keyboardXAxis', 'keyboardLeft', 'keyboardRight')
+      input:addAnalogAxisDetector('gamepadXAxis', 'leftx', 1)
+
+      --controls
+      input:addButton('primary', {'keyboardX', 'gamepadA'})
+      input:addAxis('horizontal', {'keyboardXAxis', 'gamepadXAxis'})
+    end
+
+    function love.update (dt)
+      input:update()
+
+      player.x += input:getAxis('horizontal') * player.speed * dt
+      if input:pressed('primary') then
+        player:shoot()
+      end
+    end
+
 API
 ---
 ###Requiring the library
 
-`input = require 'input'`
+`input = require 'tactile'`
 
 What do you know, it's just like every other library!
 
@@ -112,7 +141,7 @@ Removes a button.
 
 - `name` is the name of the button.
 
-__Note:__ be careful when removing buttons! If another piece of code is still using them, the game will crash.
+__Note:__ be careful when removing buttons! If another piece of code is still using them, the game will crash. If you need to change a button, consider creating a new button with the same name, which will overwrite the old one.
 
 ### Axis detectors
 
@@ -156,4 +185,4 @@ Removes a axis.
 
 - `name` is the name of the axis.
 
-__Note:__ be careful when removing axes! If another piece of code is still using them, the game will crash.
+__Note:__ be careful when removing axes! If another piece of code is still using them, the game will crash. If you need to change an axis, consider creating a new one with the same name, which will overwrite the old one.
