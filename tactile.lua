@@ -1,3 +1,11 @@
+local function removeByValue (t, value)
+  for k, v in pairs(t) do
+    if v == value then
+      table.remove(t, k)
+    end
+  end
+end
+
 local tactile = {}
 
 tactile.joysticks = love.joystick.getJoysticks()
@@ -83,10 +91,9 @@ function tactile.addAxisButtonDetector(axis, threshold, joystickNum)
 end
 
 --removes a button detector
-function tactile.removeButtonDetector(name)
-  assert(name, 'name is nil')
-
-  tactile.buttonDetectors[name] = nil
+function tactile.removeButtonDetector(detector)
+  assert(detector, 'detector is nil')
+  removeByValue(tactile.buttonDetectors, detector)
 end
 
 --holds detectors
@@ -119,10 +126,9 @@ function tactile.addButton(detectors)
 end
 
 --removes a button
-function tactile.removeButton(name)
-  assert(name, 'name is nil')
-
-  tactile.buttons[name] = nil
+function tactile.removeButton(button)
+  assert(button, 'button is nil')
+  removeByValue(tactile.buttons, button)
 end
 
 --general axis detector
@@ -187,10 +193,9 @@ function tactile.addBinaryAxisDetector(negative, positive)
 end
 
 --removes an axis detector
-function tactile.removeAxisDetector(name)
-  assert(name, 'name is nil')
-
-  tactile.axisDetectors[name] = nil
+function tactile.removeAxisDetector(detector)
+  assert(detector, 'detector is nil')
+  removeByValue(tactile.axisDetectors, detector)
 end
 
 --holds axis detectors
@@ -216,10 +221,9 @@ function tactile.addAxis(detectors)
 end
 
 --removes an axis
-function tactile.removeAxis(name)
-  assert(name, 'name is nil')
-
-  tactile.axes[name] = nil
+function tactile.removeAxis(axis)
+  assert(axis, 'axis is nil')
+  removeByValue(tactile.axes, axis)
 end
 
 function tactile.update()
