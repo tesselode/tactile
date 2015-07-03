@@ -23,28 +23,28 @@ function love.load ()
   input = require 'tactile'
 
   --button detectors
-  input.addKeyboardButtonDetector('keyboardX', 'x')
-  input.addKeyboardButtonDetector('keyboardLeft', 'left')
-  input.addKeyboardButtonDetector('keyboardRight', 'right')
-  input.addGamepadButtonDetector('gamepadA', 'a', 1)
+  keyboardX     = input.addKeyboardButtonDetector('x')
+  keyboardLeft  = input.addKeyboardButtonDetector('left')
+  keyboardRight = input.addKeyboardButtonDetector('right')
+  gamepadA      = input.addGamepadButtonDetector('a', 1)
 
   --axis detectors
-  input.addBinaryAxisDetector('keyboardXAxis', 'keyboardLeft', 'keyboardRight')
-  input.addAnalogAxisDetector('gamepadXAxis', 'leftx', 1)
+  keyboardXAxis = input.addBinaryAxisDetector(keyboardLeft, keyboardRight)
+  gamepadXAxis  = input.addAnalogAxisDetector('leftx', 1)
 
   --controls
-  input.addButton('primary', {'keyboardX', 'gamepadA'})
-  input.addAxis('horizontal', {'keyboardXAxis', 'gamepadXAxis'})
+  primary    = input.addButton({keyboardX, gamepadA})
+  horizontal = input.addAxis({keyboardXAxis, gamepadXAxis})
 end
 
 function love.update (dt)
   input.update()
 
   --movement
-  player.x += input.getAxis('horizontal') * player.speed * dt
+  player.x += horizontal.value * player.speed * dt
 
   --shooting
-  if input.pressed('primary') then
+  if primary.pressed then
     player:shoot()
   end
 end
