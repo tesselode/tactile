@@ -20,7 +20,7 @@ end
 function tactile.addKeyboardButtonDetector(key)
   assert(type(key) == 'string', 'key is not a KeyConstant')
 
-  local detector = tactile.addButtonDetector(name)
+  local detector = tactile.addButtonDetector()
   detector.key = key
 
   function detector:update()
@@ -34,7 +34,7 @@ end
 function tactile.addMouseButtonDetector(button)
   assert(type(button) == 'string', 'button is not a MouseConstant')
 
-  local detector = tactile.addButtonDetector(name)
+  local detector = tactile.addButtonDetector()
   detector.button = button
 
   function detector:update()
@@ -49,7 +49,7 @@ function tactile.addGamepadButtonDetector(button, joystickNum)
   assert(type(button) == 'string', 'button is not a GamepadButton')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local detector = tactile.addButtonDetector(name)
+  local detector = tactile.addButtonDetector()
   detector.button      = button
   detector.joystickNum = joystickNum
 
@@ -67,7 +67,7 @@ function tactile.addAxisButtonDetector(axis, threshold, joystickNum)
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local detector = tactile.addButtonDetector(name)
+  local detector = tactile.addButtonDetector()
   detector.axis        = axis
   detector.threshold   = threshold
   detector.joystickNum = joystickNum
@@ -126,9 +126,7 @@ function tactile.removeButton(name)
 end
 
 --general axis detector
-function tactile.addAxisDetector(name)
-  assert(name, 'name is nil')
-
+function tactile.addAxisDetector()
   local axisDetector = {}
   axisDetector.value = 0
 
@@ -142,17 +140,16 @@ function tactile.addAxisDetector(name)
 
   function axisDetector:update() end
 
-  tactile.axisDetectors[name] = axisDetector
+  table.insert(tactile.axisDetectors, axisDetector)
   return axisDetector
 end
 
 --joystick axis detector
-function tactile.addAnalogAxisDetector(name, axis, joystickNum)
-  assert(name, 'name is nil')
+function tactile.addAnalogAxisDetector(axis, joystickNum)
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local axisDetector = tactile.addAxisDetector(name)
+  local axisDetector = tactile.addAxisDetector()
   axisDetector.axis        = axis
   axisDetector.joystickNum = joystickNum
 
@@ -166,21 +163,20 @@ function tactile.addAnalogAxisDetector(name, axis, joystickNum)
 end
 
 --keyboard axis detector
-function tactile.addBinaryAxisDetector(name, negative, positive)
-  assert(name, 'name is nil')
+function tactile.addBinaryAxisDetector(negative, positive)
   assert(negative, 'negative is nil')
   assert(positive, 'positive is nil')
 
-  local axisDetector = tactile.addAxisDetector(name)
-  axisDetector.negative = tactile.buttonDetectors[negative]
-  axisDetector.positive = tactile.buttonDetectors[positive]
+  local axisDetector = tactile.addAxisDetector()
+  axisDetector.negative = negative
+  axisDetector.positive = positive
 
   function axisDetector:update()
-    if self.negative.current and self.positive.current then
+    if self.negative.down and self.positive.down then
       self.value = 0
-    elseif self.negative.current then
+    elseif self.negative.down then
       self.value = -1
-    elseif self.positive.current then
+    elseif self.positive.down then
       self.value = 1
     else
       self.value = 0
@@ -198,18 +194,16 @@ function tactile.removeAxisDetector(name)
 end
 
 --holds axis detectors
-function tactile.addAxis(name, detectors)
-  assert(name, 'name is nil')
+function tactile.addAxis(detectors)
+  assert(type(detectors) == 'table', 'detectors is not a table')
 
   local axis = {}
-  axis.detectors = {}
-  for k, v in pairs(detectors) do
-    table.insert(axis.detectors, tactile.axisDetectors[v])
-  end
+  axis.detectors = detectors
 
   function axis:update()
     axis.value = 0
 
+    --set the overall value to the last non-zero axis detector value
     for i = 1, #self.detectors do
       if self.detectors[i]:getValue() ~= 0 then
         self.value = self.detectors[i]:getValue()
@@ -217,7 +211,7 @@ function tactile.addAxis(name, detectors)
     end
   end
 
-  tactile.axes[name] = axis
+  table.insert(tactile.axes, axis)
   return axis
 end
 
