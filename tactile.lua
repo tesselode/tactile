@@ -4,16 +4,16 @@ tactile.joysticks = love.joystick.getJoysticks()
 tactile.deadzone = 0.25
 
 tactile.buttonDetectors = {}
-tactile.buttons = {}
 tactile.axisDetectors = {}
+tactile.buttons = {}
 tactile.axes = {}
 
 --general button detector class
 function tactile.addButtonDetector(name)
   local detector = {}
-  detector.current = false
+  detector.down = false
   tactile.buttonDetectors[name] = detector
-  return(detector)
+  return detector
 end
 
 --detects if a keyboard key is down/pressed/released
@@ -25,7 +25,7 @@ function tactile.addKeyboardButtonDetector(name, key)
   detector.key = key
 
   function detector:update()
-    self.current = love.keyboard.isDown(self.key)
+    self.down = love.keyboard.isDown(self.key)
   end
 
   return detector
@@ -40,7 +40,7 @@ function tactile.addMouseButtonDetector(name, button)
   detector.button = button
 
   function detector:update()
-    self.current = love.mouse.isDown(self.button)
+    self.down = love.mouse.isDown(self.button)
   end
 
   return detector
@@ -58,7 +58,7 @@ function tactile.addGamepadButtonDetector(name, button, joystickNum)
 
   function detector:update()
     if tactile.joysticks[self.joystickNum] then
-      self.current = tactile.joysticks[self.joystickNum]:isGamepadDown(self.button)
+      self.down = tactile.joysticks[self.joystickNum]:isGamepadDown(self.button)
     end
   end
 
@@ -79,7 +79,7 @@ function tactile.addAxisButtonDetector(name, axis, threshold, joystickNum)
   function detector:update()
     if tactile.joysticks[self.joystickNum] then
       local axisValue = tactile.joysticks[self.joystickNum]:getGamepadAxis(axis)
-      detector.current = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
+      detector.down = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
     end
   end
 
@@ -104,22 +104,22 @@ function tactile.addButton(name, detectors)
     table.insert(button.detectors, tactile.buttonDetectors[v])
   end
 
-  button.prev    = false
-  button.current = false
+  button.downPrevious = false
+  button.down         = false
 
   function button:update()
-    button.prev = button.current
-    button.current = false
+    button.downPrevious = button.down
+    button.down = false
 
     for k, v in pairs(button.detectors) do
       --trigger the button if any of the detectors are triggered
-      if v.current then
-        button.current = true
+      if v.down then
+        button.down = true
       end
     end
 
-    button.pressed  = button.current and not button.prev
-    button.released = button.prev and not button.current
+    button.pressed  = button.down and not button.downPrevious
+    button.released = button.downPrevious and not button.down
   end
 
   tactile.buttons[name] = button
@@ -261,7 +261,7 @@ end
 --access functions
 function tactile.isDown(button)
   assert(button, 'button is nil')
-  return tactile.buttons[button].current
+  return tactile.buttons[button].down
 end
 
 function tactile.pressed(button)
