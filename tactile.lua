@@ -9,16 +9,15 @@ tactile.buttons = {}
 tactile.axes = {}
 
 --general button detector class
-function tactile.addButtonDetector(name)
+function tactile.addButtonDetector()
   local detector = {}
   detector.down = false
-  tactile.buttonDetectors[name] = detector
+  table.insert(tactile.buttonDetectors, detector)
   return detector
 end
 
 --detects if a keyboard key is down/pressed/released
-function tactile.addKeyboardButtonDetector(name, key)
-  assert(name, 'name is nil')
+function tactile.addKeyboardButtonDetector(key)
   assert(type(key) == 'string', 'key is not a KeyConstant')
 
   local detector = tactile.addButtonDetector(name)
@@ -32,8 +31,7 @@ function tactile.addKeyboardButtonDetector(name, key)
 end
 
 --detects if a mouse button is down/pressed/released
-function tactile.addMouseButtonDetector(name, button)
-  assert(name, 'name is nil')
+function tactile.addMouseButtonDetector(button)
   assert(type(button) == 'string', 'button is not a MouseConstant')
 
   local detector = tactile.addButtonDetector(name)
@@ -47,8 +45,7 @@ function tactile.addMouseButtonDetector(name, button)
 end
 
 --detects if a gamepad button is down/pressed/released
-function tactile.addGamepadButtonDetector(name, button, joystickNum)
-  assert(name, 'name is nil')
+function tactile.addGamepadButtonDetector(button, joystickNum)
   assert(type(button) == 'string', 'button is not a GamepadButton')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
@@ -66,8 +63,7 @@ function tactile.addGamepadButtonDetector(name, button, joystickNum)
 end
 
 --detects if a joystick axis passes a certain threshold
-function tactile.addAxisButtonDetector(name, axis, threshold, joystickNum)
-  assert(name, 'name is nil')
+function tactile.addAxisButtonDetector(axis, threshold, joystickNum)
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
@@ -94,15 +90,11 @@ function tactile.removeButtonDetector(name)
 end
 
 --holds detectors
-function tactile.addButton(name, detectors)
-  assert(name, 'name is nil')
+function tactile.addButton(detectors)
   assert(type(detectors) == 'table', 'detectors is not a table')
 
   local button = {}
-  button.detectors = {}
-  for k, v in pairs(detectors) do
-    table.insert(button.detectors, tactile.buttonDetectors[v])
-  end
+  button.detectors = detectors
 
   button.downPrevious = false
   button.down         = false
@@ -122,7 +114,7 @@ function tactile.addButton(name, detectors)
     button.released = button.downPrevious and not button.down
   end
 
-  tactile.buttons[name] = button
+  table.insert(tactile.buttons, button)
   return button
 end
 
