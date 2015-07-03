@@ -248,27 +248,6 @@ function tactile.update()
   end
 end
 
---access functions
-function tactile.isDown(button)
-  assert(button, 'button is nil')
-  return tactile.buttons[button].down
-end
-
-function tactile.pressed(button)
-  assert(button, 'button is nil')
-  return tactile.buttons[button].pressed
-end
-
-function tactile.released(button)
-  assert(button, 'button is nil')
-  return tactile.buttons[button].released
-end
-
-function tactile.getAxis(axis)
-  assert(axis, 'axis is nil')
-  return tactile.axes[axis].value
-end
-
 --refreshes the joysticks list
 function tactile.getJoysticks()
   tactile.joysticks = love.joystick.getJoysticks()
