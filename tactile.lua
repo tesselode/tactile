@@ -5,20 +5,13 @@ input.deadzone = 0.25
 
 input.buttonDetectors = {}
 input.buttons = {}
-
 input.axisDetectors = {}
 input.axes = {}
 
 --general button detector class
 function input.addButtonDetector(name)
   local detector = {}
-  detector.prev = false
   detector.current = false
-
-  function detector:update()
-    detector.prev = detector.current
-  end
-
   input.buttonDetectors[name] = detector
   return(detector)
 end
@@ -31,10 +24,7 @@ function input.addKeyboardButtonDetector(name, key)
   local detector = input.addButtonDetector(name)
   detector.key = key
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
     self.current = love.keyboard.isDown(self.key)
   end
 
@@ -49,10 +39,7 @@ function input.addMouseButtonDetector(name, button)
   local detector = input.addButtonDetector(name)
   detector.button = button
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
     self.current = love.mouse.isDown(self.button)
   end
 
@@ -69,10 +56,7 @@ function input.addGamepadButtonDetector(name, button, joystickNum)
   detector.button = button
   detector.joystickNum = joystickNum
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
     if input.joysticks[self.joystickNum] then
       self.current = input.joysticks[self.joystickNum]:isGamepadDown(self.button)
     end
@@ -92,10 +76,7 @@ function input.addAxisButtonDetector(name, axis, threshold, joystickNum)
   detector.threshold = threshold
   detector.joystickNum = joystickNum
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
     if input.joysticks[self.joystickNum] then
       local axisValue = input.joysticks[self.joystickNum]:getGamepadAxis(axis)
       detector.current = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
@@ -123,7 +104,7 @@ function input.addButton(name, detectors)
     table.insert(button.detectors, input.buttonDetectors[v])
   end
 
-  button.prev = false
+  button.prev    = false
   button.current = false
 
   function button:update()
@@ -137,7 +118,7 @@ function input.addButton(name, detectors)
       end
     end
 
-    button.pressed = button.current and not button.prev
+    button.pressed  = button.current and not button.prev
     button.released = button.prev and not button.current
   end
 
@@ -180,7 +161,7 @@ function input.addAnalogAxisDetector(name, axis, joystickNum)
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
   local axisDetector = input.addAxisDetector(name)
-  axisDetector.axis = axis
+  axisDetector.axis        = axis
   axisDetector.joystickNum = joystickNum
 
   function axisDetector:update()
