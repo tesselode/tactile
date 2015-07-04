@@ -1,80 +1,70 @@
-local input = {}
+local function removeByValue (t, value)
+  for k, v in pairs(t) do
+    if v == value then
+      table.remove(t, k)
+    end
+  end
+end
 
-input.joysticks = love.joystick.getJoysticks()
-input.deadzone = 0.25
+local tactile = {}
 
-input.buttonDetectors = {}
-input.buttons = {}
+tactile.joysticks = love.joystick.getJoysticks()
+tactile.deadzone = 0.25
 
-input.axisDetectors = {}
-input.axes = {}
+tactile.buttonDetectors = {}
+tactile.axisDetectors   = {}
+tactile.buttons         = {}
+tactile.axes            = {}
+tactile.axisPairs       = {}
 
 --general button detector class
-function input.addButtonDetector(name)
+function tactile.addButtonDetector()
   local detector = {}
-  detector.prev = false
-  detector.current = false
-
-  function detector:update()
-    detector.prev = detector.current
-  end
-
-  input.buttonDetectors[name] = detector
-  return(detector)
+  detector.down = false
+  table.insert(tactile.buttonDetectors, detector)
+  return detector
 end
 
 --detects if a keyboard key is down/pressed/released
-function input.addKeyboardButtonDetector(name, key)
-  assert(name, 'name is nil')
+function tactile.addKeyboardButtonDetector(key)
   assert(type(key) == 'string', 'key is not a KeyConstant')
 
-  local detector = input.addButtonDetector(name)
+  local detector = tactile.addButtonDetector()
   detector.key = key
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
-    self.current = love.keyboard.isDown(self.key)
+    self.down = love.keyboard.isDown(self.key)
   end
 
   return detector
 end
 
 --detects if a mouse button is down/pressed/released
-function input.addMouseButtonDetector(name, button)
-  assert(name, 'name is nil')
+function tactile.addMouseButtonDetector(button)
   assert(type(button) == 'string', 'button is not a MouseConstant')
 
-  local detector = input.addButtonDetector(name)
+  local detector = tactile.addButtonDetector()
   detector.button = button
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
-    self.current = love.mouse.isDown(self.button)
+    self.down = love.mouse.isDown(self.button)
   end
 
   return detector
 end
 
 --detects if a gamepad button is down/pressed/released
-function input.addGamepadButtonDetector(name, button, joystickNum)
-  assert(name, 'name is nil')
+function tactile.addGamepadButtonDetector(button, joystickNum)
   assert(type(button) == 'string', 'button is not a GamepadButton')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local detector = input.addButtonDetector(name)
-  detector.button = button
+  local detector = tactile.addButtonDetector()
+  detector.button      = button
   detector.joystickNum = joystickNum
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
-    if input.joysticks[self.joystickNum] then
-      self.current = input.joysticks[self.joystickNum]:isGamepadDown(self.button)
+    if tactile.joysticks[self.joystickNum] then
+      self.down = tactile.joysticks[self.joystickNum]:isGamepadDown(self.button)
     end
   end
 
@@ -82,23 +72,19 @@ function input.addGamepadButtonDetector(name, button, joystickNum)
 end
 
 --detects if a joystick axis passes a certain threshold
-function input.addAxisButtonDetector(name, axis, threshold, joystickNum)
-  assert(name, 'name is nil')
+function tactile.addAxisButtonDetector(axis, threshold, joystickNum)
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local detector = input.addButtonDetector(name)
-  detector.axis = axis
-  detector.threshold = threshold
+  local detector = tactile.addButtonDetector()
+  detector.axis        = axis
+  detector.threshold   = threshold
   detector.joystickNum = joystickNum
 
-  local parentUpdate = detector.update
   function detector:update()
-    parentUpdate(self)
-
-    if input.joysticks[self.joystickNum] then
-      local axisValue = input.joysticks[self.joystickNum]:getGamepadAxis(axis)
-      detector.current = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
+    if tactile.joysticks[self.joystickNum] then
+      local axisValue = tactile.joysticks[self.joystickNum]:getGamepadAxis(axis)
+      detector.down = (axisValue < 0) == (self.threshold < 0) and math.abs(axisValue) > math.abs(self.threshold)
     end
   end
 
@@ -106,61 +92,53 @@ function input.addAxisButtonDetector(name, axis, threshold, joystickNum)
 end
 
 --removes a button detector
-function input.removeButtonDetector(name)
-  assert(name, 'name is nil')
-
-  input.buttonDetectors[name] = nil
+function tactile.removeButtonDetector(detector)
+  assert(detector, 'detector is nil')
+  removeByValue(tactile.buttonDetectors, detector)
 end
 
 --holds detectors
-function input.addButton(name, detectors)
-  assert(name, 'name is nil')
+function tactile.addButton(detectors)
   assert(type(detectors) == 'table', 'detectors is not a table')
 
   local button = {}
-  button.detectors = {}
-  for k, v in pairs(detectors) do
-    table.insert(button.detectors, input.buttonDetectors[v])
-  end
+  button.detectors = detectors
 
-  button.prev = false
-  button.current = false
+  button.downPrevious = false
+  button.down         = false
 
   function button:update()
-    button.prev = button.current
-    button.current = false
+    button.downPrevious = button.down
+    button.down = false
 
     for k, v in pairs(button.detectors) do
       --trigger the button if any of the detectors are triggered
-      if v.current then
-        button.current = true
+      if v.down then
+        button.down = true
       end
     end
 
-    button.pressed = button.current and not button.prev
-    button.released = button.prev and not button.current
+    button.pressed  = button.down and not button.downPrevious
+    button.released = button.downPrevious and not button.down
   end
 
-  input.buttons[name] = button
+  table.insert(tactile.buttons, button)
   return button
 end
 
 --removes a button
-function input.removeButton(name)
-  assert(name, 'name is nil')
-
-  input.buttons[name] = nil
+function tactile.removeButton(button)
+  assert(button, 'button is nil')
+  removeByValue(tactile.buttons, button)
 end
 
 --general axis detector
-function input.addAxisDetector(name)
-  assert(name, 'name is nil')
-
+function tactile.addAxisDetector()
   local axisDetector = {}
   axisDetector.value = 0
 
   function axisDetector:getValue()
-    if math.abs(self.value) > input.deadzone then
+    if math.abs(self.value) > tactile.deadzone then
       return self.value
     else
       return 0
@@ -169,23 +147,22 @@ function input.addAxisDetector(name)
 
   function axisDetector:update() end
 
-  input.axisDetectors[name] = axisDetector
+  table.insert(tactile.axisDetectors, axisDetector)
   return axisDetector
 end
 
 --joystick axis detector
-function input.addAnalogAxisDetector(name, axis, joystickNum)
-  assert(name, 'name is nil')
+function tactile.addAnalogAxisDetector(axis, joystickNum)
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local axisDetector = input.addAxisDetector(name)
-  axisDetector.axis = axis
+  local axisDetector = tactile.addAxisDetector()
+  axisDetector.axis        = axis
   axisDetector.joystickNum = joystickNum
 
   function axisDetector:update()
-    if input.joysticks[self.joystickNum] then
-      self.value = input.joysticks[self.joystickNum]:getGamepadAxis(self.axis)
+    if tactile.joysticks[self.joystickNum] then
+      self.value = tactile.joysticks[self.joystickNum]:getGamepadAxis(self.axis)
     end
   end
 
@@ -193,21 +170,20 @@ function input.addAnalogAxisDetector(name, axis, joystickNum)
 end
 
 --keyboard axis detector
-function input.addBinaryAxisDetector(name, negative, positive)
-  assert(name, 'name is nil')
+function tactile.addBinaryAxisDetector(negative, positive)
   assert(negative, 'negative is nil')
   assert(positive, 'positive is nil')
 
-  local axisDetector = input.addAxisDetector(name)
-  axisDetector.negative = input.buttonDetectors[negative]
-  axisDetector.positive = input.buttonDetectors[positive]
+  local axisDetector = tactile.addAxisDetector()
+  axisDetector.negative = negative
+  axisDetector.positive = positive
 
   function axisDetector:update()
-    if self.negative.current and self.positive.current then
+    if self.negative.down and self.positive.down then
       self.value = 0
-    elseif self.negative.current then
+    elseif self.negative.down then
       self.value = -1
-    elseif self.positive.current then
+    elseif self.positive.down then
       self.value = 1
     else
       self.value = 0
@@ -218,25 +194,22 @@ function input.addBinaryAxisDetector(name, negative, positive)
 end
 
 --removes an axis detector
-function input.removeAxisDetector(name)
-  assert(name, 'name is nil')
-
-  input.axisDetectors[name] = nil
+function tactile.removeAxisDetector(detector)
+  assert(detector, 'detector is nil')
+  removeByValue(tactile.axisDetectors, detector)
 end
 
 --holds axis detectors
-function input.addAxis(name, detectors)
-  assert(name, 'name is nil')
+function tactile.addAxis(detectors)
+  assert(type(detectors) == 'table', 'detectors is not a table')
 
   local axis = {}
-  axis.detectors = {}
-  for k, v in pairs(detectors) do
-    table.insert(axis.detectors, input.axisDetectors[v])
-  end
+  axis.detectors = detectors
 
   function axis:update()
     axis.value = 0
 
+    --set the overall value to the last non-zero axis detector value
     for i = 1, #self.detectors do
       if self.detectors[i]:getValue() ~= 0 then
         self.value = self.detectors[i]:getValue()
@@ -244,63 +217,78 @@ function input.addAxis(name, detectors)
     end
   end
 
-  input.axes[name] = axis
+  table.insert(tactile.axes, axis)
   return axis
 end
 
 --removes an axis
-function input.removeAxis(name)
-  assert(name, 'name is nil')
-
-  input.axes[name] = nil
+function tactile.removeAxis(axis)
+  assert(axis, 'axis is nil')
+  removeByValue(tactile.axes, axis)
 end
 
-function input.update()
+--holds two axes and calculates a vector (length limited to 1)
+function tactile.addAxisPair(xAxis, yAxis)
+  assert(xAxis, 'xAxis is nil')
+  assert(yAxis, 'yAxis is nil')
+
+  local axisPair = {}
+  axisPair.xAxis = xAxis
+  axisPair.yAxis = yAxis
+  axisPair.x     = 0
+  axisPair.y     = 0
+
+  function axisPair:update()
+    self.x = self.xAxis.value
+    self.y = self.yAxis.value
+
+    --normalize if length is more than 1
+    local len = math.sqrt(self.x ^ 2 + self.y ^ 2)
+    if len > 1 then
+      self.x = self.x / len
+      self.y = self.y / len
+    end
+  end
+
+  table.insert(tactile.axisPairs, axisPair)
+  return axisPair
+end
+
+function tactile.removeAxisPair(axisPair)
+  assert(axisPair, 'axisPair is nil')
+  removeByValue(tactile.axisPairs, axisPair)
+end
+
+function tactile.update()
   --update button detectors
-  for k, v in pairs(input.buttonDetectors) do
+  for k, v in pairs(tactile.buttonDetectors) do
     v:update()
   end
 
   --update axis detectors
-  for k, v in pairs(input.axisDetectors) do
+  for k, v in pairs(tactile.axisDetectors) do
     v:update()
   end
 
   --update buttons
-  for k, v in pairs(input.buttons) do
+  for k, v in pairs(tactile.buttons) do
     v:update()
   end
 
   --update axes
-  for k, v in pairs(input.axes) do
+  for k, v in pairs(tactile.axes) do
+    v:update()
+  end
+
+  --update axis pairs
+  for k, v in pairs(tactile.axisPairs) do
     v:update()
   end
 end
 
---access functions
-function input.isDown(button)
-  assert(button, 'button is nil')
-  return input.buttons[button].current
-end
-
-function input.pressed(button)
-  assert(button, 'button is nil')
-  return input.buttons[button].pressed
-end
-
-function input.released(button)
-  assert(button, 'button is nil')
-  return input.buttons[button].released
-end
-
-function input.getAxis(axis)
-  assert(axis, 'axis is nil')
-  return input.axes[axis].value
-end
-
 --refreshes the joysticks list
-function input.getJoysticks()
-  input.joysticks = love.joystick.getJoysticks()
+function tactile.getJoysticks()
+  tactile.joysticks = love.joystick.getJoysticks()
 end
 
-return input
+return tactile

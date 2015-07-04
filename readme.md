@@ -1,12 +1,14 @@
 Tactile
 =======
 
-Tactile is a simple input library for LÖVE.
+Tactile is a straightforward and flexible input library for LÖVE.
+
+If you want to use the library in your game, just grab tactile.lua and you're good to go! For an interactive example (that also acts as a test kind of sort of), clone the repo and run love in the project folder.
 
 Overview
 --------
 
-Tactile is made up of four types of objects:
+Tactile has 5 different types of objects:
 
 - **Button detectors** detect a single binary input (like keys and gamepad buttons)
 
@@ -16,6 +18,8 @@ Tactile is made up of four types of objects:
 
 - **Axes** are controls that are set from -1 to 1 based on a set of axis detectors.
 
+- **Axis pairs** are controls that have an x and y value set by two axis detectors. They automatically limit the length of the vector to 1, restraining the control to a circle.
+
 Example
 -------
 ```lua
@@ -23,28 +27,28 @@ function love.load ()
   input = require 'tactile'
 
   --button detectors
-  input.addKeyboardButtonDetector('keyboardX', 'x')
-  input.addKeyboardButtonDetector('keyboardLeft', 'left')
-  input.addKeyboardButtonDetector('keyboardRight', 'right')
-  input.addGamepadButtonDetector('gamepadA', 'a', 1)
+  keyboardX     = input.addKeyboardButtonDetector('x')
+  keyboardLeft  = input.addKeyboardButtonDetector('left')
+  keyboardRight = input.addKeyboardButtonDetector('right')
+  gamepadA      = input.addGamepadButtonDetector('a', 1)
 
   --axis detectors
-  input.addBinaryAxisDetector('keyboardXAxis', 'keyboardLeft', 'keyboardRight')
-  input.addAnalogAxisDetector('gamepadXAxis', 'leftx', 1)
+  keyboardXAxis = input.addBinaryAxisDetector(keyboardLeft, keyboardRight)
+  gamepadXAxis  = input.addAnalogAxisDetector('leftx', 1)
 
   --controls
-  input.addButton('primary', {'keyboardX', 'gamepadA'})
-  input.addAxis('horizontal', {'keyboardXAxis', 'gamepadXAxis'})
+  primary    = input.addButton({keyboardX, gamepadA})
+  horizontal = input.addAxis({keyboardXAxis, gamepadXAxis})
 end
 
 function love.update (dt)
   input.update()
 
   --movement
-  player.x += input.getAxis('horizontal') * player.speed * dt
+  player.x += horizontal.value * player.speed * dt
 
   --shooting
-  if input.pressed('primary') then
+  if primary.pressed then
     player:shoot()
   end
 end
@@ -58,35 +62,11 @@ API
 
 What do you know, it's just like every other library!
 
-###The basics
+###Main module
 
 `input.update()`
 
 Checks for inputs every frame. Call this in love.update.
-
-`input.isDown(button)`
-
-Returns true if a button is currently held down. Returns false if not.
-
-- `button` is the name of the button to check.
-
-`input.pressed(button)`
-
-Returns true if a button was pressed this frame. Returns false if not.
-
-- `button` is the name of the button to check.
-
-`input.released(button)`
-
-Returns true if a button was released this frame. Returns false if not.
-
-- `button` is the name of the button to check.
-
-`input.getAxis(axis)`
-
-Returns the value of an axis (a float from -1 to 1).
-
-- `axis` is the name of the axis to check.
 
 `input.getJoysticks()`
 
@@ -94,100 +74,118 @@ Refreshes the list of joysticks. Use this to check if a controller is plugged in
 
 ###Button detectors
 
-`input.addKeyboardButtonDetector(name, key)`
+`detector = input.addKeyboardButtonDetector(key)`
 
 Adds a button detector that is triggered when a certain keyboard key is held down.
 
-- `name` is the name of the button detector.
 - `key` is the `KeyConstant` to check for.
 
-`input.addMouseButtonDetector(name, button)`
+`detector = input.addMouseButtonDetector(button)`
 
 Adds a button detector that is triggered when a certain mouse button is held down.
 
-- `name` is the name of the button detector.
 - `button` is the `MouseConstant` to check for.
 
-`input.addGamepadButtonDetector (name, button, joystickNum)`
+`detector = input.addGamepadButtonDetector(button, joystickNum)`
 
 Adds a button detector that is triggered when a certain gamepad button is held down.
 
-- `name` is the name of the button detector.
 - `button` is the `GamepadButton` to check for.
 - `joystickNum` is the joystick to check for input on.
 
-`input.addAxisButtonDetector (name, axis, threshold, joystickNum)`
+`detector = input.addAxisButtonDetector(axis, threshold, joystickNum)`
 
 Adds a button detector that is triggered when an axis on a gamepad passes a certain threshold. This is useful if you want an analog input to control a binary control, such as a menu navigation button. You can also use this to tack controller support onto a game that was only meant for keyboard, but in my heart, I know you can do better! :)
 
-- `name` is the name of the button detector.
 - `axis` is the `GamepadAxis` to check for.
 - `threshold` is the value the axis has to reach for an input to be registered. If the threshold is positive, the value will have to be greater than the threshold. If the threshold is negative, the value will have to be smaller.
 - `joystickNum` is the joystick to check for input on.
 
-`input.removeButtonDetector(name)`
+`input.removeButtonDetector(detector)`
 
 Removes a button detector.
 
-- `name` is the name of the button detector.
+- `detector` is the button detector to remove.
 
 ### Buttons
 
-`input.addButton(name, detectors)`
+`button = input.addButton(detectors)`
 
 Adds a button.
 
-- `name` is the name of the button.
-- `detectors` is a table containing the names of all the button detectors that should activate this button.
+- `detectors` is a table containing the button detectors that should activate this button.
 
-`input.removeButton(name)`
+`input.removeButton(button)`
 
 Removes a button.
 
-- `name` is the name of the button.
+- `button` is the button to remove.
 
-__Note:__ be careful when removing buttons! If another piece of code is still using them, the game will crash. If you need to change a button, consider creating a new button with the same name, which will overwrite the old one.
+Buttons can be accessed using the following variables:
+
+- `button.down` is true if the button is currently held down, false if not.
+- `button.pressed` is true if the button was just pressed this frame, false if not.
+- `button.released` is true if the button was just released this frame, false if not.
 
 ### Axis detectors
 
 __Note:__ by default, all axis detectors have a deadzone of 0.25, meaning that any inputs with a magnitude of less than 0.25 will be ignored. You can change this setting by setting the variable input.deadzone.
 
-`input.addAnalogAxisDetector (name, axis, joystickNum)`
+`detector = input.addAnalogAxisDetector(axis, joystickNum)`
 
 Adds an axis detector that reads an analog input from a controller.
 
-- `name` is the name of the axis detector.
 - `axis` is the `GamepadAxis` to check for.
 - `joystickNum` is the number of the joystick to check for.
 
-`input.addBinaryAxisDetector (name, negative, positive)`
+`detector = input.addBinaryAxisDetector(negative, positive)`
 
 Adds an axis detector that always has a value of -1, 0, or 1 based on the state of two button detectors. If the negative button detector is active, the value is -1. If the positive button detector is active, the value is 1. If both or neither are active, the value is 0. This is useful for allowing binary controls (like keyboard controls) to operate an axis (ie, if you designed your game for controller, but you also want to allow keyboard controls).
 
-- `name` is the name of the axis detector.
-- `negative` is the name of a button detector. This will be assigned to the negative side.
-- `positive` is the name of a button detector. This will be assigned to the positive side.
+- `negative` is the button detector that will be assigned to the negative side.
+- `positive` is the button detector that will be assigned to the positive side.
 
-`input.removeAxisDetector(name)`
+`input.removeAxisDetector(detector)`
 
 Removes an axis detector.
 
-- `name` is the name of the axis detector.
+- `detector` is the axis detector to remove.
 
 ### Axes
 
-`input.addAxis(name, detectors)`
+`axis = input.addAxis(detectors)`
 
 Adds an axis.
 
-- `name` is the name of the axis.
-- `detectors` is a table containing the names of all the axis detectors that the axis should use.
+- `detectors` is a table containing the axis detectors that the axis should use.
   - Note: the last axis detector in the list will take precedence! So if you want one control method to override the other, place it last in the list.
 
-`input.removeAxis(name)`
+`input.removeAxis(axis)`
 
 Removes a axis.
 
-- `name` is the name of the axis.
+- `axis` is the axis to remove.
 
-__Note:__ be careful when removing axes! If another piece of code is still using them, the game will crash. If you need to change an axis, consider creating a new one with the same name, which will overwrite the old one.
+Axes can be accessed using the following variables:
+
+- `axis.value` is the current value of the axis (from -1 to 1).
+
+### Axis Pairs
+
+`axisPair = input.addAxisPair(xAxis, yAxis)`
+
+Adds an axis pair that holds the values of two axes in the variables x and y. The vector(x, y) will be normalized if its length is more than 1. This is good for any game that allows the player to move in more than 4 directions, as it makes sure that the player will not move faster diagonally than in a cardinal direction.
+
+- `xAxis` is the axis that will provide the x value.
+- `yAxis` is the axis that will provide the y value.
+
+`input.removeAxisPair(axisPair)`
+
+Removes a axisPair.
+
+- `axisPair` is the axis pair to remove.
+
+Axis pairs can be accessed using the following variables:
+
+- `axisPair.x` is the value of the horizontal axis (from -1 to 1).
+- `axisPair.y` is the value of the vertical axis (from -1 to 1).
