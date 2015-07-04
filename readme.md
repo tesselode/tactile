@@ -3,10 +3,12 @@ Tactile
 
 Tactile is a straightforward and flexible input library for LÖVE.
 
+If you want to use the library in your game, just grab tactile.lua and you're good to go! For an interactive example (that also acts as a test kind of sort of), clone the repo and run love in the project folder.
+
 Overview
 --------
 
-Tactile is made up of four types of objects:
+Tactile has 5 different types of objects:
 
 - **Button detectors** detect a single binary input (like keys and gamepad buttons)
 
@@ -15,6 +17,8 @@ Tactile is made up of four types of objects:
 - **Buttons** are controls that are activated if any one of a set of button detectors detects an input.
 
 - **Axes** are controls that are set from -1 to 1 based on a set of axis detectors.
+
+- **Axis pairs** are controls that have an x and y value set by two axis detectors. They automatically limit the length of the vector to 1, restraining the control to a circle.
 
 Example
 -------
@@ -165,3 +169,23 @@ Removes a axis.
 Axes can be accessed using the following variables:
 
 - `axis.value` is the current value of the axis (from -1 to 1).
+
+### Axis Pairs
+
+`axisPair = input.addAxisPair(xAxis, yAxis)`
+
+Adds an axis pair that holds the values of two axes in the variables x and y. The vector(x, y) will be normalized if its length is more than 1. This is good for any game that allows the player to move in more than 4 directions, as it makes sure that the player will not move faster diagonally than in a cardinal direction.
+
+- `xAxis` is the axis that will provide the x value.
+- `yAxis` is the axis that will provide the y value.
+
+`input.removeAxisPair(axisPair)`
+
+Removes a axisPair.
+
+- `axisPair` is the axis pair to remove.
+
+Axis pairs can be accessed using the following variables:
+
+- `axisPair.x` is the value of the horizontal axis (from -1 to 1).
+- `axisPair.y` is the value of the vertical axis (from -1 to 1).
