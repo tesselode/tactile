@@ -254,6 +254,11 @@ function tactile.addAxisPair(xAxis, yAxis)
   return axisPair
 end
 
+function tactile.removeAxisPair(axisPair)
+  assert(axisPair, 'axisPair is nil')
+  removeByValue(tactile.axisPairs, axisPair)
+end
+
 function tactile.update()
   --update button detectors
   for k, v in pairs(tactile.buttonDetectors) do
