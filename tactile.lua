@@ -98,11 +98,9 @@ function tactile.removeButtonDetector(detector)
 end
 
 --holds detectors
-function tactile.addButton(detectors)
-  assert(type(detectors) == 'table', 'detectors is not a table')
-
+function tactile.addButton(...)
   local button = {}
-  button.detectors = detectors
+  button.detectors = {...}
 
   button.downPrevious = false
   button.down         = false
@@ -189,11 +187,9 @@ function tactile.removeAxisDetector(detector)
 end
 
 --holds axis detectors
-function tactile.addAxis(detectors)
-  assert(type(detectors) == 'table', 'detectors is not a table')
-
+function tactile.addAxis(...)
   local axis = {}
-  axis.detectors = detectors
+  axis.detectors = {...}
   axis.rawValue  = 0
   axis.value     = 0
 
