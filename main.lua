@@ -65,14 +65,14 @@ function love.load()
   gamepadXAxis  = input.addAnalogAxisDetector('leftx', 1)
   gamepadYAxis  = input.addAnalogAxisDetector('lefty', 1)
 
-  left          = input.addButton({keyboardLeft, gamepadLeft})
-  right         = input.addButton({keyboardRight, gamepadRight})
-  up            = input.addButton({keyboardUp, gamepadUp})
-  down          = input.addButton({keyboardDown, gamepadDown})
-  primary       = input.addButton({keyboardX, gamepadA, mouseLeft})
+  left          = input.addButton(keyboardLeft, gamepadLeft)
+  right         = input.addButton(keyboardRight, gamepadRight)
+  up            = input.addButton(keyboardUp, gamepadUp)
+  down          = input.addButton(keyboardDown, gamepadDown)
+  primary       = input.addButton(keyboardX, gamepadA, mouseLeft)
 
-  horizontal    = input.addAxis({keyboardXAxis, gamepadXAxis})
-  vertical      = input.addAxis({keyboardYAxis, gamepadYAxis})
+  horizontal    = input.addAxis(gamepadXAxis, keyboardXAxis)
+  vertical      = input.addAxis(gamepadYAxis, keyboardYAxis)
 
   axisPair      = input.addAxisPair(horizontal, vertical)
 
@@ -99,8 +99,9 @@ function love.draw()
 
   love.graphics.setColor(255, 255, 255, 255)
   love.graphics.circle('line', 0, 0, 100, 100)
+  love.graphics.circle('line', 0, 0, 100 * input.deadzone, 100 * input.deadzone)
   love.graphics.circle('fill', axisPair.x * 100, axisPair.y * 100, 5, 100)
-  love.graphics.printf('The circle is an axis pair (read: analog stick x and y components). It can be operated by the left analog stick on joystick 1 or the arrow keys. The dot should not leave the circle.', -50, 120, 100, 'center')
+  love.graphics.printf('The circle represents an axis pair (read: analog stick x and y components). It can be operated by the left analog stick on joystick 1 or the arrow keys. The dot should not leave the outer circle. The inner circle is the deadzone.', -75, 120, 150, 'center')
 
   love.graphics.pop()
 
@@ -111,7 +112,6 @@ function love.draw()
   leftButtonDisplay:draw()
   downButtonDisplay:draw()
   rightButtonDisplay:draw()
-  love.graphics.setColor(255, 255, 255, 255)
   love.graphics.printf('These are 4 directional buttons. They light up when held down, and flash when pressed or released. These can be operated by both the left analog stick on joystick 1 and the arrow keys.', 0, 220, 150, 'center')
 
   love.graphics.pop()
