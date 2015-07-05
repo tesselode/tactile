@@ -7,10 +7,10 @@ function ButtonDisplay(x, y, button)
   buttonDisplay.releasedAlpha = 0
 
   function buttonDisplay:update (dt)
-    if self.button.pressed then
+    if self.button.isPressed() then
       self.pressedAlpha = 255
     end
-    if self.button.released then
+    if self.button.isReleased() then
       self.releasedAlpha = 255
     end
 
@@ -25,7 +25,7 @@ function ButtonDisplay(x, y, button)
   end
 
   function buttonDisplay:draw()
-    if self.button.down then
+    if self.button.isDown() then
       love.graphics.setColor(79, 102, 66, 255)
       love.graphics.rectangle('fill', self.x, self.y, 50, 50)
     end
@@ -65,14 +65,14 @@ function love.load()
   gamepadXAxis  = input.addAnalogAxisDetector('leftx', 1)
   gamepadYAxis  = input.addAnalogAxisDetector('lefty', 1)
 
-  left          = input.addButton({keyboardLeft, gamepadLeft})
-  right         = input.addButton({keyboardRight, gamepadRight})
-  up            = input.addButton({keyboardUp, gamepadUp})
-  down          = input.addButton({keyboardDown, gamepadDown})
-  primary       = input.addButton({keyboardX, gamepadA, mouseLeft})
+  left          = input.addButton(keyboardLeft, gamepadLeft)
+  right         = input.addButton(keyboardRight, gamepadRight)
+  up            = input.addButton(keyboardUp, gamepadUp)
+  down          = input.addButton(keyboardDown, gamepadDown)
+  primary       = input.addButton(keyboardX, gamepadA, mouseLeft)
 
-  horizontal    = input.addAxis({keyboardXAxis, gamepadXAxis})
-  vertical      = input.addAxis({keyboardYAxis, gamepadYAxis})
+  horizontal    = input.addAxis(keyboardXAxis, gamepadXAxis)
+  vertical      = input.addAxis(keyboardYAxis, gamepadYAxis)
 
   axisPair      = input.addAxisPair(horizontal, vertical)
 
@@ -99,7 +99,8 @@ function love.draw()
 
   love.graphics.setColor(255, 255, 255, 255)
   love.graphics.circle('line', 0, 0, 100, 100)
-  love.graphics.circle('fill', axisPair.x * 100, axisPair.y * 100, 5, 100)
+  local x, y = axisPair.getValue()
+  love.graphics.circle('fill', x * 100, y * 100, 5, 100)
   love.graphics.printf('The circle is an axis pair (read: analog stick x and y components). It can be operated by the left analog stick on joystick 1 or the arrow keys. The dot should not leave the circle.', -50, 120, 100, 'center')
 
   love.graphics.pop()
