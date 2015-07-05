@@ -222,29 +222,32 @@ function tactile.removeAxis(axis)
 end
 
 --holds two axes and calculates a vector (length limited to 1)
-function tactile.addAxisPair(xAxis, yAxis)
-  assert(xAxis, 'xAxis is nil')
-  assert(yAxis, 'yAxis is nil')
-
+function tactile.addAxisPair(...)
   local axisPair = {}
-  axisPair.xAxis = xAxis
-  axisPair.yAxis = yAxis
+  axisPair.detectorPairs = {...}
   axisPair.x     = 0
   axisPair.y     = 0
 
   function axisPair:update()
-    self.x = self.xAxis.rawValue
-    self.y = self.yAxis.rawValue
+    self.x = 0
+    self.y = 0
 
-    local len = math.sqrt(self.x ^ 2 + self.y ^ 2)
+    --iterate through detector pairs
+    for i = 1, #self.detectorPairs do
+      local pair = self.detectorPairs[i]
+      local x    = pair[1].value
+      local y    = pair[2].value
+      local len  = math.sqrt(x^2 + y^2)
 
-    --deadzone
-    if len < tactile.deadzone then
-      self.x = 0
-      self.y = 0
+      --set self values to detector pair values
+      if len > tactile.deadzone then
+        self.x = x
+        self.y = y
+      end
     end
 
     --normalize if length is more than 1
+    local len = math.sqrt(self.x ^ 2 + self.y ^ 2)
     if len > 1 then
       self.x = self.x / len
       self.y = self.y / len

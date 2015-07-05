@@ -74,7 +74,7 @@ function love.load()
   horizontal    = input.addAxis(gamepadXAxis, keyboardXAxis)
   vertical      = input.addAxis(gamepadYAxis, keyboardYAxis)
 
-  axisPair      = input.addAxisPair(horizontal, vertical)
+  axisPair      = input.addAxisPair({gamepadXAxis, gamepadYAxis}, {keyboardXAxis, keyboardYAxis})
 
   upButtonDisplay      = ButtonDisplay(50, 0, up)
   leftButtonDisplay    = ButtonDisplay(0, 50, left)

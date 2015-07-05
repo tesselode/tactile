@@ -173,12 +173,12 @@ Axes can be accessed using the following variables:
 
 ### Axis Pairs
 
-`axisPair = input.addAxisPair(xAxis, yAxis)`
+`axisPair = input.addAxisPair(...)`
 
 Adds an axis pair that holds the values of two axes in the variables x and y. The vector (x, y) will be normalized if its length is more than 1. This is good for any game that allows the player to move in more than 4 directions, as it makes sure that the player will not move faster diagonally than in a cardinal direction.
 
-- `xAxis` is the axis that will provide the x value.
-- `yAxis` is the axis that will provide the y value.
+- `...` is a list of detector pairs. A detector pair is a table where the first element is the horizontal axis detector and the second element is the vertical axis detector. Each detector pair represents an input method, like a keyboard or a gamepad.
+  - Note: axis pairs have similar precedence rules to axes. The last detector pair in the list that has a non-zero value (including deadzone) will set the value of the axis pair. Remember: binary after analog!
 
 `input.removeAxisPair(axisPair)`
 
