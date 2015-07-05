@@ -10,7 +10,7 @@ local tactile = {}
 
 tactile.joysticks = love.joystick.getJoysticks()
 tactile.deadzone         = 0.25
-tactile.separateDeadzone = false
+tactile.separateDeadzone = true
 
 tactile.buttonDetectors = {}
 tactile.axisDetectors   = {}
