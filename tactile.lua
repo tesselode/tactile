@@ -12,9 +12,10 @@ tactile.joysticks = love.joystick.getJoysticks()
 tactile.deadzone = 0.25
 
 tactile.buttonDetectors = {}
-tactile.axisDetectors = {}
-tactile.buttons = {}
-tactile.axes = {}
+tactile.axisDetectors   = {}
+tactile.buttons         = {}
+tactile.axes            = {}
+tactile.axisPairs       = {}
 
 --general button detector class
 function tactile.addButtonDetector()
@@ -221,6 +222,38 @@ function tactile.removeAxis(axis)
   removeByValue(tactile.axes, axis)
 end
 
+--holds two axes and calculates a vector (length limited to 1)
+function tactile.addAxisPair(xAxis, yAxis)
+  assert(xAxis, 'xAxis is nil')
+  assert(yAxis, 'yAxis is nil')
+
+  local axisPair = {}
+  axisPair.xAxis = xAxis
+  axisPair.yAxis = yAxis
+  axisPair.x     = 0
+  axisPair.y     = 0
+
+  function axisPair:update()
+    self.x = self.xAxis.value
+    self.y = self.yAxis.value
+
+    --normalize if length is more than 1
+    local len = math.sqrt(self.x ^ 2 + self.y ^ 2)
+    if len > 1 then
+      self.x = self.x / len
+      self.y = self.y / len
+    end
+  end
+
+  table.insert(tactile.axisPairs, axisPair)
+  return axisPair
+end
+
+function tactile.removeAxisPair(axisPair)
+  assert(axisPair, 'axisPair is nil')
+  removeByValue(tactile.axisPairs, axisPair)
+end
+
 function tactile.update()
 
   --update buttons
@@ -231,6 +264,11 @@ function tactile.update()
   --update axes
   for k, v in pairs(tactile.axes) do
     v.update()
+  end
+
+  --update axis pairs
+  for k, v in pairs(tactile.axisPairs) do
+    v:update()
   end
 end
 
