@@ -14,26 +14,18 @@ end
 function tactile.addKeyboardButtonDetector(button)
   assert(type(button) == 'string', 'key is not a KeyConstant')
 
-  local detector = {}
-  
-  function detector.isDown()
-    return love.keyboard.isDown(button)
+  return function ()
+    return love.keyboard.isDown(button) and 1 or 0
   end
-
-  return detector
 end
 
 --detects if a mouse button is down
 function tactile.addMouseButtonDetector(button)
   assert(type(button) == 'string', 'button is not a MouseConstant')
 
-  local detector = {}
-  
-  function detector.isDown()
-    return love.mouse.isDown(button)
+  return function ()
+    return love.mouse.isDown(button) and 1 or 0
   end
-
-  return detector
 end
 
 --detects if a gamepad button is down/pressed/released
@@ -41,14 +33,10 @@ function tactile.addGamepadButtonDetector(button, joystickNum)
   assert(type(button) == 'string', 'button is not a GamepadButton')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local detector = {}
-  
-  function detector.isDown()
+  return function ()
     local joystick = tactileJoysticks[joystickNum]
-    return joystick and joystick:isGamepadDown(button)
+    return joystick and joystick:isGamepadDown(button) and 1 or 0
   end
-
-  return detector
 end
 
 --detects if a joystick axis passes a certain threshold
@@ -56,18 +44,13 @@ function tactile.addAxisButtonDetector(axis, threshold, joystickNum)
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local detector = {}
-  
-  function detector.isDown()
+  return function ()
     local joystick = tactileJoysticks[joystickNum]
-    if joystick then
-      local axisValue = joystick:getGamepadAxis(axis)
-      return (axisValue < 0) == (threshold < 0) and
-          math.abs(axisValue) > math.abs(threshold)
-    end
+    if not joystick then return 0 end
+    local axisValue = joystick:getGamepadAxis(axis)
+    return (axisValue < 0) == (threshold < 0) and
+        math.abs(axisValue) > math.abs(threshold) and 1 or 0
   end
-
-  return detector
 end
 
 --holds detectors
@@ -82,7 +65,7 @@ function tactile.addButton(...)
 
     for k, detector in ipairs(detectors) do
       --trigger the button if any of the detectors are triggered
-      if detector.isDown() then
+      if detector() ~= 0 then
         down = true
         break
       end
@@ -122,25 +105,20 @@ function tactile.addAnalogAxisDetector(axis, joystickNum)
   assert(type(axis) == 'string', 'axis is not a GamepadAxis')
   assert(type(joystickNum) == 'number', 'joystickNum is not a number')
 
-  local detector = {}
-  
-  function detector.getValue()
+  return function ()
     local joystick = tactileJoysticks[joystickNum]
     return joystick and getAxisValue(joystick:getGamepadAxis(axis)) or 0
   end
-
-  return detector
 end
 
 --keyboard axis detector
 function tactile.addBinaryAxisDetector(negative, positive)
   assert(negative, 'negative is nil')
   assert(positive, 'positive is nil')
-
-  local detector = {}
   
-  function detector.getValue()
-    local negativeIsDown, positiveIsDown = negative.isDown(), positive.isDown()
+  return function ()
+    local negativeIsDown = negative() ~= 0 
+    local positiveIsDown = positive() ~= 0
     
     if negativeIsDown and positiveIsDown then
       return 0
@@ -153,8 +131,6 @@ function tactile.addBinaryAxisDetector(negative, positive)
     end
     return 0
   end
-
-  return detector
 end
 
 --holds axis detectors
@@ -165,7 +141,7 @@ function tactile.addAxis(...)
   function axis.getValue()
     --set the overall value to the first non-zero axis detector value
     for k, detector in ipairs(detectors) do
-      local value = detector.getValue()
+      local value = detector()
       if value ~= 0 then
         return value
       end
@@ -183,7 +159,7 @@ function tactile.addAxisPair(xAxis, yAxis)
 
   local axisPair = {}
 
-  function axisPair:getValue()
+  function axisPair.getValue()
     local x = xAxis.getValue()
     local y = yAxis.getValue()
 
