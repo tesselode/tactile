@@ -237,11 +237,18 @@ function tactile.addAxisPair(xAxis, yAxis)
   axisPair.y     = 0
 
   function axisPair:update()
-    self.x = self.xAxis.value
-    self.y = self.yAxis.value
+    self.x = self.xAxis.rawValue
+    self.y = self.yAxis.rawValue
+
+    local len = math.sqrt(self.x ^ 2 + self.y ^ 2)
+
+    --deadzone
+    if len < tactile.deadzone then
+      self.x = 0
+      self.y = 0
+    end
 
     --normalize if length is more than 1
-    local len = math.sqrt(self.x ^ 2 + self.y ^ 2)
     if len > 1 then
       self.x = self.x / len
       self.y = self.y / len
