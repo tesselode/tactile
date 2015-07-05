@@ -37,8 +37,8 @@ function love.load ()
   gamepadXAxis  = input.addAnalogAxisDetector('leftx', 1)
 
   --controls
-  primary    = input.addButton({keyboardX, gamepadA})
-  horizontal = input.addAxis({keyboardXAxis, gamepadXAxis})
+  primary    = input.addButton(keyboardX, gamepadA)
+  horizontal = input.addAxis(keyboardXAxis, gamepadXAxis)
 end
 
 function love.update (dt)
@@ -109,11 +109,11 @@ Removes a button detector.
 
 ### Buttons
 
-`button = input.addButton(detectors)`
+`button = input.addButton(...)`
 
 Adds a button.
 
-- `detectors` is a table containing the button detectors that should activate this button.
+- `...` is a list of button detectors that should activate this button.
 
 `input.removeButton(button)`
 
@@ -153,12 +153,12 @@ Removes an axis detector.
 
 ### Axes
 
-`axis = input.addAxis(detectors)`
+`axis = input.addAxis(...)`
 
 Adds an axis.
 
-- `detectors` is a table containing the axis detectors that the axis should use.
-  - Note: the last axis detector in the list will take precedence! So if you want one control method to override the other, place it last in the list.
+- `...` is a list of axis detectors that the axis should use.
+  - Note: axes check the list of axis detectors in order. The value of the axis will be set to the value of the first axis detector with a non-zero value. Because of this, if an axis uses an analog axis detector and a binary axis detector, it is recommended that you put the binary axis detector last in the list. Analog axis detectors almost never have a non-zero value due to analog sticks almost never being perfectly centered, and if they come last in the list, they'll always be registering an input and overriding the binary axis detector.
 
 `input.removeAxis(axis)`
 
@@ -168,13 +168,14 @@ Removes a axis.
 
 Axes can be accessed using the following variables:
 
-- `axis.value` is the current value of the axis (from -1 to 1).
+- `axis.rawValue` is the current value of the axis (from -1 to 1).
+- `axis.value` is the current value of the axis with deadzone taken into account.
 
 ### Axis Pairs
 
 `axisPair = input.addAxisPair(xAxis, yAxis)`
 
-Adds an axis pair that holds the values of two axes in the variables x and y. The vector(x, y) will be normalized if its length is more than 1. This is good for any game that allows the player to move in more than 4 directions, as it makes sure that the player will not move faster diagonally than in a cardinal direction.
+Adds an axis pair that holds the values of two axes in the variables x and y. The vector (x, y) will be normalized if its length is more than 1. This is good for any game that allows the player to move in more than 4 directions, as it makes sure that the player will not move faster diagonally than in a cardinal direction.
 
 - `xAxis` is the axis that will provide the x value.
 - `yAxis` is the axis that will provide the y value.
