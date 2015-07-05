@@ -136,17 +136,6 @@ end
 function tactile.addAxisDetector()
   local axisDetector = {}
   axisDetector.value = 0
-
-  function axisDetector:getValue()
-    if math.abs(self.value) > tactile.deadzone then
-      return self.value
-    else
-      return 0
-    end
-  end
-
-  function axisDetector:update() end
-
   table.insert(tactile.axisDetectors, axisDetector)
   return axisDetector
 end
@@ -211,8 +200,8 @@ function tactile.addAxis(detectors)
 
     --set the overall value to the last non-zero axis detector value
     for i = 1, #self.detectors do
-      if self.detectors[i]:getValue() ~= 0 then
-        self.value = self.detectors[i]:getValue()
+      if math.abs(self.detectors[i].value) > tactile.deadzone then
+        self.value = self.detectors[i].value
       end
     end
   end
