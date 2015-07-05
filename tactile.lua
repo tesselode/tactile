@@ -9,7 +9,8 @@ end
 local tactile = {}
 
 tactile.joysticks = love.joystick.getJoysticks()
-tactile.deadzone = 0.25
+tactile.deadzone         = 0.25
+tactile.separateDeadzone = false
 
 tactile.buttonDetectors = {}
 tactile.axisDetectors   = {}
@@ -237,12 +238,32 @@ function tactile.addAxisPair(...)
       local pair = self.detectorPairs[i]
       local x    = pair[1].value
       local y    = pair[2].value
-      local len  = math.sqrt(x^2 + y^2)
 
       --set self values to detector pair values
-      if len > tactile.deadzone then
-        self.x = x
-        self.y = y
+      if tactile.separateDeadzone then
+        --using separate axis deadzone calculation
+        local appliedX, appliedY
+        if math.abs(x) > tactile.deadzone then
+          appliedX = x
+        else
+          appliedX = 0
+        end
+        if math.abs(y) > tactile.deadzone then
+          appliedY = y
+        else
+          appliedY = 0
+        end
+        if appliedX ~= 0 or appliedY ~= 0 then
+          self.x = appliedX
+          self.y = appliedY
+        end
+      else
+        --using vector length deadzone calculation
+        local len = math.sqrt(x^2 + y^2)
+        if len > tactile.deadzone then
+          self.x = x
+          self.y = y
+        end
       end
     end
 

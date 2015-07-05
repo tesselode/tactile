@@ -72,6 +72,10 @@ Checks for inputs every frame. Call this in love.update.
 
 Refreshes the list of joysticks. Use this to check if a controller is plugged in or unplugged.
 
+The main module has some options you can set:
+- `tactile.deadzone` is the deadzone applied to axes and axis pairs. (default: `0.25`)
+- `tactile.separateDeadzone` is a boolean. If true, axis pairs will apply deadzone separately to the x and y axis. If false, axis pairs will apply deadzone to the entire vector (x, y). What this means for your game is if you set this to false, the on a gamepad, you'll be able to input a wider range of angles, but it'll be impossible to input perfect 90 degree angles (straight up/down/left/right). (default: `true`)
+
 ###Button detectors
 
 `detector = input.addKeyboardButtonDetector(key)`
@@ -128,8 +132,6 @@ Buttons can be accessed using the following variables:
 - `button.released` is true if the button was just released this frame, false if not.
 
 ### Axis detectors
-
-__Note:__ by default, all axis detectors have a deadzone of 0.25, meaning that any inputs with a magnitude of less than 0.25 will be ignored. You can change this setting by setting the variable input.deadzone.
 
 `detector = input.addAnalogAxisDetector(axis, joystickNum)`
 
