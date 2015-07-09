@@ -1,8 +1,11 @@
 function love.load()
   tactile = require 'tactile'
-  detector = tactile:addKeyboardButtonDetector('left')
+  keyboardLeft  = tactile:addKeyboardButtonDetector('left')
+  keyboardRight = tactile:addKeyboardButtonDetector('right')
+  eitherLeftOrRight = tactile:addButton(keyboardLeft, keyboardRight)
 end
 
 function love.update(dt)
-  print(detector())
+  tactile:update()
+  print(eitherLeftOrRight.down)
 end
