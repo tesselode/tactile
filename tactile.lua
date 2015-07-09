@@ -90,8 +90,20 @@ function tactile.gamepadButton(button, gamepadNum)
   end
 end
 
+function tactile.mouseButton(button)
+  return function()
+    return love.mouse.isDown(button)
+  end
+end
+
+function tactile.thresholdButton(axisDetector, threshold)
+  return axisDetector()
+    and math.abs(axisDetector()) > math.abs(threshold)
+    and (axisDetector() < 0) == (threshold < 0)
+end
+
 --axis detectors
-function tactile.binaryStick(negative, positive)
+function tactile.binaryAxis(negative, positive)
   return function()
     if negative() and not positive() then
       return -1

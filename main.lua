@@ -3,7 +3,7 @@ function love.load()
   
   keyboardLeft  = tactile.key('left')
   keyboardRight = tactile.key('right')
-  keyboardXAxis = tactile.binaryStick(keyboardLeft, keyboardRight)
+  keyboardXAxis = tactile.binaryAxis(keyboardLeft, keyboardRight)
   gamepadXAxis  = tactile.analogStick('leftx', 1)
   
   handler    = tactile.new()
