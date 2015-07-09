@@ -97,9 +97,11 @@ function tactile.mouseButton(button)
 end
 
 function tactile.thresholdButton(axisDetector, threshold)
-  return axisDetector()
-    and math.abs(axisDetector()) > math.abs(threshold)
-    and (axisDetector() < 0) == (threshold < 0)
+  return function()
+    return axisDetector()
+      and math.abs(axisDetector()) > math.abs(threshold)
+      and (axisDetector() < 0) == (threshold < 0)
+  end
 end
 
 --axis detectors
