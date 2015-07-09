@@ -73,8 +73,7 @@ function love.load()
   primary    = handler:addButton(keyboardX, gamepadA, mouseLeft)
   horizontal = handler:addAxis(gamepadXAxis, keyboardXAxis)
   vertical   = handler:addAxis(gamepadYAxis, keyboardYAxis)
-
-  --axisPair      = input.addAxisPair({gamepadXAxis, gamepadYAxis}, {keyboardXAxis, keyboardYAxis})
+  axisPair   = handler:addAxisPair({gamepadXAxis, gamepadYAxis}, {keyboardXAxis, keyboardYAxis})
 
   upButtonDisplay      = ButtonDisplay(50, 0, up)
   leftButtonDisplay    = ButtonDisplay(0, 50, left)
@@ -94,16 +93,16 @@ function love.update(dt)
 end
 
 function love.draw()
-  --love.graphics.push()
-  --love.graphics.translate(120, 120)
+  love.graphics.push()
+  love.graphics.translate(120, 120)
 
-  --love.graphics.setColor(255, 255, 255, 255)
-  --love.graphics.circle('line', 0, 0, 100, 100)
-  --love.graphics.circle('line', 0, 0, 100 * input.deadzone, 100 * input.deadzone)
-  --love.graphics.circle('fill', axisPair.x * 100, axisPair.y * 100, 5, 100)
-  --love.graphics.printf('The circle represents an axis pair (read: analog stick x and y components). It can be operated by the left analog stick on joystick 1 or the arrow keys. The dot should not leave the outer circle. The inner circle is the deadzone.', -75, 120, 150, 'center')
+  love.graphics.setColor(255, 255, 255, 255)
+  love.graphics.circle('line', 0, 0, 100, 100)
+  love.graphics.circle('line', 0, 0, 100 * handler.deadzone, 100 * handler.deadzone)
+  love.graphics.circle('fill', axisPair.x * 100, axisPair.y * 100, 5, 100)
+  love.graphics.printf('The circle represents an axis pair (read: analog stick x and y components). It can be operated by the left analog stick on joystick 1 or the arrow keys. The dot should not leave the outer circle. The inner circle is the deadzone.', -75, 120, 150, 'center')
 
-  --love.graphics.pop()
+  love.graphics.pop()
 
   love.graphics.push()
   love.graphics.translate(350, 45)

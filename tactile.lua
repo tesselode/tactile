@@ -33,6 +33,40 @@ function Axis:update()
   end
 end
 
+--axis pair class
+local AxisPair = {}
+AxisPair.__index = AxisPair
+
+function AxisPair:update()
+  self.x = 0
+  self.y = 0
+  
+  for i = 1, #self.detectors do
+    local x, y
+    
+    --check if either axis detector is non-zero
+    if math.abs(self.detectors[i][1]()) > self.deadzone then
+      x = self.detectors[i][1]()
+    end
+    if math.abs(self.detectors[i][2]()) > self.deadzone then
+      y = self.detectors[i][2]()
+    end
+    
+    --if so, override both x and y
+    if x or y then
+      self.x = x or 0
+      self.y = y or 0
+    end
+  end
+  
+  --restrict vector length to 1
+  local len = math.sqrt(self.x ^ 2 + self.y ^ 2)
+  if len > 1 then
+    self.x = self.x / len
+    self.y = self.y / len
+  end
+end
+
 --input handler class
 local InputHandler = {}
 InputHandler.__index = InputHandler
@@ -59,11 +93,25 @@ function InputHandler:addAxis(...)
   return setmetatable(axisInstance, Axis)
 end
 
+function InputHandler:addAxisPair(...)
+  local axisPairInstance = {
+    detectors = {...},
+    deadzone  = self.deadzone,
+    x         = 0,
+    y         = 0
+  }
+  table.insert(self.axisPairs, axisPairInstance)
+  return setmetatable(axisPairInstance, AxisPair)
+end
+
 function InputHandler:update()
   for k, v in pairs(self.buttons) do
     v:update()
   end
   for k, v in pairs(self.axes) do
+    v:update()
+  end
+  for k, v in pairs(self.axisPairs) do
     v:update()
   end
 end
@@ -112,7 +160,7 @@ function tactile.binaryAxis(negative, positive)
     elseif positive() and not negative() then
       return 1
     else
-      return false
+      return 0
     end
   end
 end
@@ -123,7 +171,7 @@ function tactile.analogStick(axis, gamepadNum)
     if gamepads[gamepadNum] then
       return gamepads[gamepadNum]:getGamepadAxis(axis)
     else
-      return false
+      return 0
     end
   end
 end
@@ -131,9 +179,10 @@ end
 --input handler constructor
 function tactile.new()
   local inputHandlerInstance = {
-    deadzone = 0.25,
-    buttons  = {},
-    axes     = {}
+    deadzone  = 0.25,
+    buttons   = {},
+    axes      = {},
+    axisPairs = {}
   }
   return setmetatable(inputHandlerInstance, InputHandler)
 end
