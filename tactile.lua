@@ -27,7 +27,7 @@ function Axis:update()
   
   --check whether any detectors have a value greater than the deadzone
   for k, v in pairs(self.detectors) do
-    if v() and math.abs(v()) > self.deadzone then
+    if math.abs(v()) > self.deadzone then
       self.value = v()
     end
   end
