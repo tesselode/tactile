@@ -1,8 +1,8 @@
 --button class
-local button = {}
-button.__index = button
+local Button = {}
+Button.__index = Button
 
-function button:update()
+function Button:update()
   self.downPrev = self.down
   self.down = false
   
@@ -19,10 +19,10 @@ function button:update()
 end
 
 --axis class
-local axis = {}
-axis.__index = axis
+local Axis = {}
+Axis.__index = Axis
 
-function axis:update()
+function Axis:update()
   self.value = 0
   
   --check whether any detectors have a value greater than the deadzone
@@ -30,6 +30,41 @@ function axis:update()
     if v() and math.abs(v()) > self.deadzone then
       self.value = v()
     end
+  end
+end
+
+--input handler class
+local InputHandler = {}
+InputHandler.__index = InputHandler
+
+function InputHandler:addButton(...)
+  local buttonInstance = {
+    detectors = {...},
+    down      = false,
+    downPrev  = false,
+    pressed   = false,
+    released  = false
+  }
+  table.insert(self.buttons, buttonInstance)
+  return setmetatable(buttonInstance, Button)
+end
+
+function InputHandler:addAxis(...)
+  local axisInstance = {
+    detectors = {...},
+    deadzone  = self.deadzone,
+    value     = 0
+  }
+  table.insert(self.axes, axisInstance)
+  return setmetatable(axisInstance, Axis)
+end
+
+function InputHandler:update()
+  for k, v in pairs(self.buttons) do
+    v:update()
+  end
+  for k, v in pairs(self.axes) do
+    v:update()
   end
 end
 
@@ -79,48 +114,14 @@ function tactile.analogStick(axis, gamepadNum)
   end
 end
 
---button constructor
-function tactile:addButton(...)
-  local buttonInstance = {
-    detectors = {...},
-    down      = false,
-    downPrev  = false,
-    pressed   = false,
-    released  = false
-  }
-  table.insert(self.buttons, buttonInstance)
-  return setmetatable(buttonInstance, button)
-end
-
---axis constructor
-function tactile:addAxis(...)
-  local axisInstance = {
-    detectors = {...},
-    deadzone  = self.deadzone,
-    value     = 0
-  }
-  table.insert(self.axes, axisInstance)
-  return setmetatable(axisInstance, axis)
-end
-
-function tactile:update()
-  for k, v in pairs(self.buttons) do
-    v:update()
-  end
-  for k, v in pairs(self.axes) do
-    v:update()
-  end
-end
-
---gives you a new input handler
+--input handler constructor
 function tactile.new()
-  local inputHandler = {
+  local inputHandlerInstance = {
     deadzone = 0.25,
     buttons  = {},
     axes     = {}
   }
-  return setmetatable(inputHandler, tactile)
+  return setmetatable(inputHandlerInstance, InputHandler)
 end
 
---return a default input handler
-return tactile.new()
+return tactile

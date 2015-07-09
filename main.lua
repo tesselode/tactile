@@ -6,10 +6,11 @@ function love.load()
   keyboardXAxis = tactile.binaryStick(keyboardLeft, keyboardRight)
   gamepadXAxis  = tactile.analogStick('leftx', 1)
   
-  horizontal    = tactile:addAxis(keyboardXAxis, gamepadXAxis)
+  handler    = tactile.new()
+  horizontal = handler:addAxis(keyboardXAxis, gamepadXAxis)
 end
 
 function love.update(dt)
-  tactile:update(dt)
+  handler:update(dt)
   print(horizontal.value)
 end
