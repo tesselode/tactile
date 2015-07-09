@@ -41,6 +41,7 @@ function AxisPair:update()
   self.x = 0
   self.y = 0
   
+  --for each pair of axis detectors...
   for i = 1, #self.detectors do
     local x, y
     
@@ -71,6 +72,7 @@ end
 local InputHandler = {}
 InputHandler.__index = InputHandler
 
+--button constructor
 function InputHandler:addButton(...)
   local buttonInstance = {
     detectors = {...},
@@ -83,6 +85,7 @@ function InputHandler:addButton(...)
   return setmetatable(buttonInstance, Button)
 end
 
+--axis constructor
 function InputHandler:addAxis(...)
   local axisInstance = {
     detectors = {...},
@@ -93,6 +96,7 @@ function InputHandler:addAxis(...)
   return setmetatable(axisInstance, Axis)
 end
 
+--axis pair constructor
 function InputHandler:addAxisPair(...)
   local axisPairInstance = {
     detectors = {...},
