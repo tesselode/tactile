@@ -1,10 +1,10 @@
 function love.load()
   tactile = require 'tactile'
   
-  keyboardLeft  = tactile:addKeyboardButtonDetector('left')
-  keyboardRight = tactile:addKeyboardButtonDetector('right')
-  keyboardXAxis = tactile:addBinaryAxisDetector(keyboardLeft, keyboardRight)
-  gamepadXAxis  = tactile:addGamepadAxisDetector('leftx', 1)
+  keyboardLeft  = tactile.key('left')
+  keyboardRight = tactile.key('right')
+  keyboardXAxis = tactile.binaryStick(keyboardLeft, keyboardRight)
+  gamepadXAxis  = tactile.analogStick('leftx', 1)
   
   horizontal    = tactile:addAxis(keyboardXAxis, gamepadXAxis)
 end

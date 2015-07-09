@@ -38,16 +38,17 @@ local tactile = {}
 tactile.__index = tactile
 
 --button detectors
-function tactile:addKeyboardButtonDetector(key)
+function tactile.key(key)
   return function()
     return love.keyboard.isDown(key)
   end
 end
 
-function tactile:addGamepadButtonDetector(button, gamepadNum)
+function tactile.gamepadButton(button, gamepadNum)
   return function()
-    if self.gamepads[gamepadNum] then
-      return self.gamepads[gamepadNum]:isGamepadDown(button)
+    local gamepads = love.joystick.getJoysticks()
+    if gamepads[gamepadNum] then
+      return gamepads[gamepadNum]:isGamepadDown(button)
     else
       return false
     end
@@ -55,7 +56,7 @@ function tactile:addGamepadButtonDetector(button, gamepadNum)
 end
 
 --axis detectors
-function tactile:addBinaryAxisDetector(negative, positive)
+function tactile.binaryStick(negative, positive)
   return function()
     if negative() and not positive() then
       return -1
@@ -67,10 +68,11 @@ function tactile:addBinaryAxisDetector(negative, positive)
   end
 end
 
-function tactile:addGamepadAxisDetector(axis, gamepadNum)
+function tactile.analogStick(axis, gamepadNum)
   return function()
-    if self.gamepads[gamepadNum] then
-      return self.gamepads[gamepadNum]:getGamepadAxis(axis)
+    local gamepads = love.joystick.getJoysticks()
+    if gamepads[gamepadNum] then
+      return gamepads[gamepadNum]:getGamepadAxis(axis)
     else
       return false
     end
@@ -113,7 +115,6 @@ end
 --gives you a new input handler
 function tactile.new()
   local inputHandler = {
-    gamepads = love.joystick.getJoysticks(),
     deadzone = 0.25,
     buttons  = {},
     axes     = {}
