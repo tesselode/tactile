@@ -25,6 +25,7 @@ axis.__index = axis
 function axis:update()
   self.value = 0
   
+  --check whether any detectors have a value greater than the deadzone
   for k, v in pairs(self.detectors) do
     if v() and math.abs(v()) > self.deadzone then
       self.value = v()
@@ -40,6 +41,16 @@ tactile.__index = tactile
 function tactile:addKeyboardButtonDetector(key)
   return function()
     return love.keyboard.isDown(key)
+  end
+end
+
+function tactile:addGamepadButtonDetector(button, gamepadNum)
+  return function()
+    if self.gamepads[gamepadNum] then
+      return self.gamepads[gamepadNum]:isGamepadDown(button)
+    else
+      return false
+    end
   end
 end
 
