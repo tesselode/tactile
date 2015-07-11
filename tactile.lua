@@ -34,11 +34,15 @@ function Button:removeDetector(detector)
   removeByValue(self.detectors, detector)
 end
 
+function Button:isDown() return self.down end
+function Button:pressed() return self.pressed end
+function Button:released() return self.released end
+
 --axis class
 local Axis = {}
 Axis.__index = Axis
 
-function Axis:update()
+function Axis:getAxis()
   self.value = 0
   
   --check whether any detectors have a value greater than the deadzone
@@ -55,51 +59,6 @@ end
 
 function Axis:removeDetector(detector)
   removeByValue(self.detectors, detector)
-end
-
---input handler class
-local InputHandler = {}
-InputHandler.__index = InputHandler
-
---button constructor
-function InputHandler:addButton(...)
-  local buttonInstance = {
-    detectors = {...},
-    down      = false,
-    downPrev  = false,
-    pressed   = false,
-    released  = false
-  }
-  table.insert(self.buttons, buttonInstance)
-  return setmetatable(buttonInstance, Button)
-end
-
-function InputHandler:removeButton(button)
-  removeByValue(self.buttons, button)
-end
-
---axis constructor
-function InputHandler:addAxis(...)
-  local axisInstance = {
-    detectors = {...},
-    deadzone  = self.deadzone,
-    value     = 0
-  }
-  table.insert(self.axes, axisInstance)
-  return setmetatable(axisInstance, Axis)
-end
-
-function InputHandler:removeAxis(axis)
-  removeByValue(self.axes, axis)
-end
-
-function InputHandler:update()
-  for k, v in pairs(self.buttons) do
-    v:update()
-  end
-  for k, v in pairs(self.axes) do
-    v:update()
-  end
 end
 
 --main module
@@ -162,14 +121,26 @@ function tactile.analogStick(axis, gamepadNum)
   end
 end
 
---input handler constructor
-function tactile.new()
-  local inputHandlerInstance = {
-    deadzone  = 0.25,
-    buttons   = {},
-    axes      = {}
+--button constructor
+function tactile.addButton(...)
+  local buttonInstance = {
+    detectors = {...},
+    down      = false,
+    downPrev  = false,
+    pressed   = false,
+    released  = false
   }
-  return setmetatable(inputHandlerInstance, InputHandler)
+  return setmetatable(buttonInstance, Button)
+end
+
+--axis constructor
+function tactile.addAxis(...)
+  local axisInstance = {
+    detectors = {...},
+    deadzone  = self.deadzone,
+    value     = 0
+  }
+  return setmetatable(axisInstance, Axis)
 end
 
 return tactile
