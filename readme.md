@@ -70,3 +70,8 @@ Creates a button detector that is activated if a keyboard key is held down.
 - `key` is the `KeyConstant` to check for.
 
 `detector = tactile.gamepadButton(button, gamepadNum)`
+
+Creates a button detector that is activated if a gamepad button is held down.
+
+- `button` is the `GamepadButton` to check for.
+- `gamepadNum` is the number of the gamepad that should be used.
