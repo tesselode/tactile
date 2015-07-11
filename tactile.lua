@@ -74,6 +74,10 @@ function InputHandler:addButton(...)
   return setmetatable(buttonInstance, Button)
 end
 
+function InputHandler:removeButton(button)
+  removeByValue(self.buttons, button)
+end
+
 --axis constructor
 function InputHandler:addAxis(...)
   local axisInstance = {
@@ -83,6 +87,10 @@ function InputHandler:addAxis(...)
   }
   table.insert(self.axes, axisInstance)
   return setmetatable(axisInstance, Axis)
+end
+
+function InputHandler:removeAxis(axis)
+  removeByValue(self.axes, axis)
 end
 
 function InputHandler:update()
