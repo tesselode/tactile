@@ -66,15 +66,15 @@ function love.load()
   keyboardYAxis = tactile.binaryAxis(keyboardUp, keyboardDown)
 
   button = {}
-  button.left       = tactile.addButton(keyboardLeft, gamepadLeft)
-  button.right      = tactile.addButton(keyboardRight, gamepadRight)
-  button.up         = tactile.addButton(keyboardUp, gamepadUp)
-  button.down       = tactile.addButton(keyboardDown, gamepadDown)
-  button.primary    = tactile.addButton(keyboardX, gamepadA, mouseLeft)
+  button.left       = tactile.newButton(keyboardLeft, gamepadLeft)
+  button.right      = tactile.newButton(keyboardRight, gamepadRight)
+  button.up         = tactile.newButton(keyboardUp, gamepadUp)
+  button.down       = tactile.newButton(keyboardDown, gamepadDown)
+  button.primary    = tactile.newButton(keyboardX, gamepadA, mouseLeft)
   
   axis = {}
-  axis.horizontal = tactile.addAxis(gamepadXAxis, keyboardXAxis)
-  axis.vertical   = tactile.addAxis(gamepadYAxis, keyboardYAxis)
+  axis.horizontal = tactile.newAxis(gamepadXAxis, keyboardXAxis)
+  axis.vertical   = tactile.newAxis(gamepadYAxis, keyboardYAxis)
 
   upButtonDisplay      = ButtonDisplay(50, 0, button.up)
   leftButtonDisplay    = ButtonDisplay(0, 50, button.left)

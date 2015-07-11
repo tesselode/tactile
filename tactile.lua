@@ -124,7 +124,7 @@ function tactile.analogStick(axis, gamepadNum)
 end
 
 --button constructor
-function tactile.addButton(...)
+function tactile.newButton(...)
   local buttonInstance = {
     detectors = {...},
     down      = false,
@@ -134,7 +134,7 @@ function tactile.addButton(...)
 end
 
 --axis constructor
-function tactile.addAxis(...)
+function tactile.newAxis(...)
   local axisInstance = {
     detectors = {...}
   }

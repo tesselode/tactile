@@ -107,7 +107,7 @@ Creates a button detector that is activated if the value of an axis detector pas
 
 Buttons are containers for button detectors. If any of the button detectors are activated, the button will be activated. As well as reporting if they are held down, buttons also keep track of whether they were just pressed or released on the current frame.
 
-`button = tactile.addButton(...)`
+`button = tactile.newButton(...)`
 
 Creates a new button.
 
@@ -171,7 +171,7 @@ Creates an axis detector that responds to two button detectors. If both or neith
 
 Axes are containers for axis detectors. The value of the axis will be set to the last non-zero value from the list of axis detectors (accounting for deadzone). You should consider which input methods you want to take precedence to decide the order to add axis detectors in.
 
-`axis = tactile.addAxis(...)`
+`axis = tactile.newAxis(...)`
 
 Creates a new axis.
 
