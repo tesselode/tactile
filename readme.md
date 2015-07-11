@@ -1,6 +1,6 @@
 Tactile
 =======
-Tactile is an input library for LÖVE to help you manage multiple input sources. It's flexible and straightforward and nice. :)
+Tactile is a flexible and straightforward input library for LÖVE to help you manage multiple input sources.
 
 If you want to use the library in your game, just grab tactile.lua and you're good to go! For an interactive example (that also acts as a test kind of sort of), clone the repo and run love in the project folder.
 
@@ -51,6 +51,20 @@ API
 
 What do you know, it's just like every other library!
 
+###Main module
+
+####Functions
+
+`tactile.rescan()`
+
+Refreshes the internal list of joysticks.
+
+####Properties
+
+Tactile has the following options you can set:
+
+- `tactile.deadzone` is the deadzone amount to use for axes.
+
 ###Button detectors
 
 A button detector is simply a function that returns true or false. Each button detector represents a single source of binary input, like a keyboard key or gamepad button. For example, here is a completely valid button detector:
@@ -74,4 +88,107 @@ Creates a button detector that is activated if a keyboard key is held down.
 Creates a button detector that is activated if a gamepad button is held down.
 
 - `button` is the `GamepadButton` to check for.
-- `gamepadNum` is the number of the gamepad that should be used.
+- `gamepadNum` is the number of the gamepad that should be checked.
+
+`detector = tactile.mouseButton(button)`
+
+Creates a button detector that is activated if a mouse button is held down.
+
+- `button` is the `MouseConstant` to check for.
+
+detector = tactile.thresholdButton(axisDetector, threshold)`
+
+Creates a button detector that is activated if the value of an axis detector passes a certain threshold. This is useful if you want an analog input to control a binary control (for example, using an analog stick to navigate a menu). You can also use this to tack controller support onto a game that only has keyboard controls, but in my heart, I know you can do better. :)
+
+- `axisDetector` is the axis detector to check.
+- `threshold` is the threshold the axis detector has to pass for the button detector to be activated. This is sensitive to sign.
+
+###Buttons
+
+Buttons are containers for button detectors. If any of the button detectors are activated, the button will be activated. As well as reporting if they are held down, buttons also keep track of whether they were just pressed or released on the current frame.
+
+`button = tactile.addButton(...)`
+
+Creates a new button.
+
+- `...` is a list of button detectors the button should use.
+
+`button:update()`
+
+Updates the button. Call this once per frame. Sorry you have to do this.
+
+`button:addDetector(detector)`
+
+Adds a button detector to the button.
+
+- `detector` is the button detector to add.
+
+`button:removeDetector(detector)`
+
+Removes a button detector from the button.
+
+- `detector` is the button detector to remove.
+
+`button:isDown()`
+
+Returns whether the button is currently being held down.
+
+`button:pressed()`
+
+Returns whether the button was just pressed this frame.
+
+`button:released()`
+
+Returns whether the button was just released this frame.
+
+###Axis detectors
+
+An axis detector is simply a function that returns a number from -1 to 1. Each axis detector represents a single analog control, like an analog stick on a gamepad. For example, here is a valid axis detector:
+
+```lua
+detector = function()
+  return love.joystick.getJoysticks()[1]:getGamepadAxis('leftx')
+end
+```
+
+Tactile comes with a few functions that create some commonly used axis detectors.
+
+`detector = tactile.analogStick(axis, gamepadNum)`
+
+Creates an axis detector that responds to an analog stick.
+
+- `axis` is the `GamepadAxis` to check for.
+- `gamepadNum` is the number of the gamepad that should be checked.
+
+`detector = tactile.binaryAxis(negative, positive)`
+
+Creates an axis detector that responds to two button detectors. If both or neither button detectors are activated, the returned value will be 0. If only the negative button detector is activated, the returned value will be -1. If only the positive button detector is activated, the returned value will be 1. This is useful for mapping binary controls to something that is normally operated by an axis, like keyboard controls for a game that is designed for the analog stick.
+
+- `negative` is the button detector on the negative side.
+- `positive` is the button detector on the positive side.
+
+###Axes
+
+Axes are containers for axis detectors. The value of the axis will be set to the last non-zero value from the list of axis detectors (accounting for deadzone). You should consider which input methods you want to take precedence to decide the order to add axis detectors in.
+
+`axis = tactile.addAxis(...)`
+
+Creates a new axis.
+
+- `...` is a list of axis detectors the axis should use.
+
+`axis:addDetector(detector)`
+
+Adds an axis detector to the axis.
+
+- `detector` is the axis detector to add.
+
+`axis:removeDetector(detector)`
+
+Removes an axis detector from the axis.
+
+- `detector` is the axis detector to remove.
+
+`axis:getValue()`
+
+Returns the current value of the axis.

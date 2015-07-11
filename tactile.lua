@@ -65,6 +65,10 @@ tactile.__index = tactile
 tactile.deadzone = .25
 tactile.gamepads = love.joystick.getJoysticks()
 
+function tactile.rescan()
+  tactile.gamepads = love.joystick.getJoysticks()
+end
+
 --button detectors
 function tactile.key(key)
   return function()
