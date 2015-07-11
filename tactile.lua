@@ -1,3 +1,11 @@
+local function removeByValue(t, value)
+  for k, v in pairs(t) do
+    if v == value then
+      table.remove(t, k)
+    end
+  end
+end
+
 --button class
 local Button = {}
 Button.__index = Button
@@ -18,6 +26,14 @@ function Button:update()
   self.released = self.downPrev and not self.down
 end
 
+function Button:addDetector(detector)
+  table.insert(self.detectors, detector)
+end
+
+function Button:removeDetector(detector)
+  removeByValue(self.detectors, detector)
+end
+
 --axis class
 local Axis = {}
 Axis.__index = Axis
@@ -31,6 +47,14 @@ function Axis:update()
       self.value = v()
     end
   end
+end
+
+function Axis:addDetector(detector)
+  table.insert(self.detectors, detector)
+end
+
+function Axis:removeDetector(detector)
+  removeByValue(self.detectors, detector)
 end
 
 --axis pair class
