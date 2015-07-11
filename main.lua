@@ -7,10 +7,10 @@ function ButtonDisplay(x, y, button)
   buttonDisplay.releasedAlpha = 0
 
   function buttonDisplay:update (dt)
-    if self.button.pressed then
+    if self.button:pressed() then
       self.pressedAlpha = 255
     end
-    if self.button.released then
+    if self.button:released() then
       self.releasedAlpha = 255
     end
 
@@ -65,24 +65,28 @@ function love.load()
   keyboardXAxis = tactile.binaryAxis(keyboardLeft, keyboardRight)
   keyboardYAxis = tactile.binaryAxis(keyboardUp, keyboardDown)
 
-  handler    = tactile.new()
-  left       = handler:addButton(keyboardLeft, gamepadLeft)
-  right      = handler:addButton(keyboardRight, gamepadRight)
-  up         = handler:addButton(keyboardUp, gamepadUp)
-  down       = handler:addButton(keyboardDown, gamepadDown)
-  primary    = handler:addButton(keyboardX, gamepadA, mouseLeft)
-  horizontal = handler:addAxis(gamepadXAxis, keyboardXAxis)
-  vertical   = handler:addAxis(gamepadYAxis, keyboardYAxis)
+  button = {}
+  button.left       = tactile.addButton(keyboardLeft, gamepadLeft)
+  button.right      = tactile.addButton(keyboardRight, gamepadRight)
+  button.up         = tactile.addButton(keyboardUp, gamepadUp)
+  button.down       = tactile.addButton(keyboardDown, gamepadDown)
+  button.primary    = tactile.addButton(keyboardX, gamepadA, mouseLeft)
+  
+  axis = {}
+  axis.horizontal = tactile.addAxis(gamepadXAxis, keyboardXAxis)
+  axis.vertical   = tactile.addAxis(gamepadYAxis, keyboardYAxis)
 
-  upButtonDisplay      = ButtonDisplay(50, 0, up)
-  leftButtonDisplay    = ButtonDisplay(0, 50, left)
-  downButtonDisplay    = ButtonDisplay(50, 100, down)
-  rightButtonDisplay   = ButtonDisplay(100, 50, right)
-  primaryButtonDisplay = ButtonDisplay(0, 0, primary)
+  upButtonDisplay      = ButtonDisplay(50, 0, button.up)
+  leftButtonDisplay    = ButtonDisplay(0, 50, button.left)
+  downButtonDisplay    = ButtonDisplay(50, 100, button.down)
+  rightButtonDisplay   = ButtonDisplay(100, 50, button.right)
+  primaryButtonDisplay = ButtonDisplay(0, 0, button.primary)
 end
 
 function love.update(dt)
-  handler:update()
+  for k, v in pairs(button) do
+    v:update()
+  end
 
   upButtonDisplay:update(dt)
   leftButtonDisplay:update(dt)
@@ -97,8 +101,8 @@ function love.draw()
 
   love.graphics.setColor(255, 255, 255, 255)
   love.graphics.rectangle('line', -100, -100, 200, 200)
-  love.graphics.rectangle('line', -handler.deadzone * 100, -handler.deadzone * 100, handler.deadzone * 200, handler.deadzone * 200)
-  love.graphics.circle('fill', horizontal.value * 100, vertical.value * 100, 5, 100)
+  love.graphics.rectangle('line', -tactile.deadzone * 100, -tactile.deadzone * 100, tactile.deadzone * 200, tactile.deadzone * 200)
+  love.graphics.circle('fill', axis.horizontal:getValue() * 100, axis.vertical:getValue() * 100, 5, 100)
   love.graphics.printf('The square represents two axes. It can be operated by the left analog stick on joystick 1 or the arrow keys. The inner square is the deadzone.', -75, 120, 150, 'center')
 
   love.graphics.pop()

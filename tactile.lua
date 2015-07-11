@@ -20,10 +20,6 @@ function Button:update()
       self.down = true
     end
   end
-  
-  --pressed and released states
-  self.pressed  = self.down and not self.downPrev
-  self.released = self.downPrev and not self.down
 end
 
 function Button:addDetector(detector)
@@ -35,22 +31,24 @@ function Button:removeDetector(detector)
 end
 
 function Button:isDown() return self.down end
-function Button:pressed() return self.pressed end
-function Button:released() return self.released end
+function Button:pressed() return self.down and not self.downPrev end
+function Button:released() return self.downPrev and not self.down end
 
 --axis class
 local Axis = {}
 Axis.__index = Axis
 
-function Axis:getAxis()
+function Axis:getValue()
   self.value = 0
   
   --check whether any detectors have a value greater than the deadzone
   for k, v in pairs(self.detectors) do
-    if math.abs(v()) > self.deadzone then
+    if math.abs(v()) > tactile.deadzone then
       self.value = v()
     end
   end
+  
+  return self.value
 end
 
 function Axis:addDetector(detector)
@@ -64,6 +62,8 @@ end
 --main module
 local tactile = {}
 tactile.__index = tactile
+tactile.deadzone = .25
+tactile.gamepads = love.joystick.getJoysticks()
 
 --button detectors
 function tactile.key(key)
@@ -74,9 +74,8 @@ end
 
 function tactile.gamepadButton(button, gamepadNum)
   return function()
-    local gamepads = love.joystick.getJoysticks()
-    if gamepads[gamepadNum] then
-      return gamepads[gamepadNum]:isGamepadDown(button)
+    if tactile.gamepads[gamepadNum] then
+      return tactile.gamepads[gamepadNum]:isGamepadDown(button)
     else
       return false
     end
@@ -112,9 +111,8 @@ end
 
 function tactile.analogStick(axis, gamepadNum)
   return function()
-    local gamepads = love.joystick.getJoysticks()
-    if gamepads[gamepadNum] then
-      return gamepads[gamepadNum]:getGamepadAxis(axis)
+    if tactile.gamepads[gamepadNum] then
+      return tactile.gamepads[gamepadNum]:getGamepadAxis(axis)
     else
       return 0
     end
@@ -126,9 +124,7 @@ function tactile.addButton(...)
   local buttonInstance = {
     detectors = {...},
     down      = false,
-    downPrev  = false,
-    pressed   = false,
-    released  = false
+    downPrev  = false
   }
   return setmetatable(buttonInstance, Button)
 end
@@ -136,9 +132,7 @@ end
 --axis constructor
 function tactile.addAxis(...)
   local axisInstance = {
-    detectors = {...},
-    deadzone  = self.deadzone,
-    value     = 0
+    detectors = {...}
   }
   return setmetatable(axisInstance, Axis)
 end
