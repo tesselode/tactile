@@ -13,10 +13,10 @@ Button.__index = Button
 function Button:update()
   self.downPrev = self.down
   self.down = false
-  
+
   --check whether any detectors are down
-  for k, v in pairs(self.detectors) do
-    if v() then
+  for _, detector in pairs(self.detectors) do
+    if detector() then
       self.down = true
     end
   end
@@ -40,14 +40,15 @@ Axis.__index = Axis
 
 function Axis:getValue()
   self.value = 0
-  
+
   --check whether any detectors have a value greater than the deadzone
-  for k, v in pairs(self.detectors) do
-    if math.abs(v()) > tactile.deadzone then
-      self.value = v()
+  for _, detector in pairs(self.detectors) do
+    local value = detector()
+    if math.abs(value) > tactile.deadzone then
+      self.value = value
     end
   end
-  
+
   return self.value
 end
 
@@ -78,11 +79,8 @@ end
 
 function tactile.gamepadButton(button, gamepadNum)
   return function()
-    if tactile.gamepads[gamepadNum] then
-      return tactile.gamepads[gamepadNum]:isGamepadDown(button)
-    else
-      return false
-    end
+    local gamepad = tactile.gamepads[gamepadNum]
+    return gamepad and gamepad:isGamepadDown(button) or false
   end
 end
 
@@ -115,11 +113,8 @@ end
 
 function tactile.analogStick(axis, gamepadNum)
   return function()
-    if tactile.gamepads[gamepadNum] then
-      return tactile.gamepads[gamepadNum]:getGamepadAxis(axis)
-    else
-      return 0
-    end
+    local gamepad = tactile.gamepads[gamepadNum]
+    return gamepad and gamepad:getGamepadAxis(axis) or 0
   end
 end
 
