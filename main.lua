@@ -71,7 +71,7 @@ function love.load()
   button.up         = tactile.newButton(keyboardUp, gamepadUp)
   button.down       = tactile.newButton(keyboardDown, gamepadDown)
   button.primary    = tactile.newButton(keyboardX, gamepadA, mouseLeft)
-  
+
   axis = {}
   axis.horizontal = tactile.newAxis(gamepadXAxis, keyboardXAxis)
   axis.vertical   = tactile.newAxis(gamepadYAxis, keyboardYAxis)

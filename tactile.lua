@@ -1,7 +1,8 @@
 local function removeByValue(t, value)
-  for k, v in pairs(t) do
-    if v == value then
-      table.remove(t, k)
+  for i = #t, 1, -1 do
+    if t[i] == value then
+      table.remove(t, i)
+      break
     end
   end
 end
@@ -18,6 +19,7 @@ function Button:update()
   for _, detector in pairs(self.detectors) do
     if detector() then
       self.down = true
+      break
     end
   end
 end
@@ -80,7 +82,7 @@ end
 function tactile.gamepadButton(button, gamepadNum)
   return function()
     local gamepad = tactile.gamepads[gamepadNum]
-    return gamepad and gamepad:isGamepadDown(button) or false
+    return gamepad and gamepad:isGamepadDown(button)
   end
 end
 
@@ -92,18 +94,18 @@ end
 
 function tactile.thresholdButton(axisDetector, threshold)
   return function()
-    return axisDetector()
-      and math.abs(axisDetector()) > math.abs(threshold)
-      and (axisDetector() < 0) == (threshold < 0)
+    local value = axisDetector()
+    return value and math.abs(value) > math.abs(threshold) and (value < 0) == (threshold < 0)
   end
 end
 
 --axis detectors
 function tactile.binaryAxis(negative, positive)
   return function()
-    if negative() and not positive() then
+    local negativeValue, positiveValue = negative(), positive()
+    if negativeValue and not positiveValue then
       return -1
-    elseif positive() and not negative() then
+    elseif positiveValue and not negativeValue then
       return 1
     else
       return 0
