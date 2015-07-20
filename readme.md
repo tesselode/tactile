@@ -13,17 +13,17 @@ Example
 ```lua
 function love.load()
   tactile = require 'tactile'
-  
+
   --button detectors
   keyboardLeft  = tactile.key('left')
   keyboardRight = tactile.key('right')
   keyboardX     = tactile.key('x')
   gamepadA      = tactile.gamepadButton('a', 1) --the second argument is controller number, in case you're wondering
-  
+
   --axis detectors
   keyboardXAxis = tactile.binaryAxis(keyboardLeft, keyboardRight)
   gamepadXAxis  = tactile.analogStick('leftx', 1)
-  
+
   --controls
   horizontal    = tactile.addAxis(keyboardXAxis, gamepadXAxis)
   shoot         = tactile.addButton(keyboardX, gamepadA)
@@ -32,10 +32,10 @@ end
 function love.update(dt)
   --you have to update buttons, sorry for the extra step :(
   shoot:update()
-  
+
   --movement
   player.x = player.x + player.speed * horizontal:getValue() * dt
-  
+
   --shooting
   if shoot:pressed() then
     player:shoot()
@@ -96,7 +96,7 @@ Creates a button detector that is activated if a mouse button is held down.
 
 - `button` is the `MouseConstant` to check for.
 
-detector = tactile.thresholdButton(axisDetector, threshold)`
+`detector = tactile.thresholdButton(axisDetector, threshold)`
 
 Creates a button detector that is activated if the value of an axis detector passes a certain threshold. This is useful if you want an analog input to control a binary control (for example, using an analog stick to navigate a menu). You can also use this to tack controller support onto a game that only has keyboard controls, but in my heart, I know you can do better. :)
 
