@@ -25,8 +25,8 @@ function love.load()
   gamepadXAxis  = tactile.analogStick('leftx', 1)
 
   --controls
-  horizontal    = tactile.addAxis(keyboardXAxis, gamepadXAxis)
-  shoot         = tactile.addButton(keyboardX, gamepadA)
+  horizontal    = tactile.newAxis(keyboardXAxis, gamepadXAxis)
+  shoot         = tactile.newButton(keyboardX, gamepadA)
 end
 
 function love.update(dt)
