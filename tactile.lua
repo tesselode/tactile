@@ -93,11 +93,6 @@ end
 
 --main module
 tactile.__index = tactile
-tactile.gamepads = love.joystick.getJoysticks()
-
-function tactile.rescan()
-  tactile.gamepads = love.joystick.getJoysticks()
-end
 
 --button detectors
 function tactile.key(key)
@@ -108,7 +103,7 @@ end
 
 function tactile.gamepadButton(button, gamepadNum)
   return function()
-    local gamepad = tactile.gamepads[gamepadNum]
+    local gamepad = love.joystick.getJoysticks()[gamepadNum]
     return gamepad and gamepad:isGamepadDown(button)
   end
 end
@@ -142,7 +137,7 @@ end
 
 function tactile.analogStick(axis, gamepadNum)
   return function()
-    local gamepad = tactile.gamepads[gamepadNum]
+    local gamepad = love.joystick.getJoysticks()[gamepadNum]
     return gamepad and gamepad:getGamepadAxis(axis) or 0
   end
 end
