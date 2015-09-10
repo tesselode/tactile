@@ -51,20 +51,6 @@ API
 
 What do you know, it's just like every other library!
 
-###Main module
-
-####Functions
-
-`tactile.rescan()`
-
-Refreshes the internal list of joysticks.
-
-####Properties
-
-Tactile has the following options you can set:
-
-- `tactile.deadzone` is the deadzone amount to use for axes.
-
 ###Button detectors
 
 A button detector is simply a function that returns true or false. Each button detector represents a single source of binary input, like a keyboard key or gamepad button. For example, here is a completely valid button detector:
@@ -192,3 +178,5 @@ Removes an axis detector from the axis.
 `axis:getValue()`
 
 Returns the current value of the axis.
+
+You can change the deadzone of the axis by setting `axis.deadzone`. Each axis has an individual deadzone setting. By default, it is 0.5.

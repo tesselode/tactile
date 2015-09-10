@@ -1,6 +1,6 @@
 local tactile = {
-  _VERSION     = 'Tactile v1.0.0',
-  _DESCRIPTION = 'A simple and straightfoward input library for LOVE.',
+  _VERSION     = 'Tactile v1.1.0',
+  _DESCRIPTION = 'A simple and straightfoward input library for LÖVE.',
   _URL         = 'https://github.com/tesselode/tactile',
   _LICENSE     = [[
     The MIT License (MIT)
@@ -45,8 +45,8 @@ function Button:update()
   self.down = false
 
   --check whether any detectors are down
-  for _, detector in pairs(self.detectors) do
-    if detector() then
+  for i = 1, #self.detectors do
+    if self.detectors[i]() then
       self.down = true
       break
     end
@@ -73,9 +73,9 @@ function Axis:getValue()
   self.value = 0
 
   --check whether any detectors have a value greater than the deadzone
-  for _, detector in pairs(self.detectors) do
-    local value = detector()
-    if math.abs(value) > tactile.deadzone then
+  for i = 1, #self.detectors do
+    local value = self.detectors[i]()
+    if math.abs(value) > self.deadzone then
       self.value = value
     end
   end
@@ -93,34 +93,43 @@ end
 
 --main module
 tactile.__index = tactile
-tactile.deadzone = .25
-tactile.gamepads = love.joystick.getJoysticks()
-
-function tactile.rescan()
-  tactile.gamepads = love.joystick.getJoysticks()
-end
 
 --button detectors
 function tactile.key(key)
+  assert(type(key) == 'string',
+    'key should be a KeyConstant (string)')
+
   return function()
     return love.keyboard.isDown(key)
   end
 end
 
 function tactile.gamepadButton(button, gamepadNum)
+  assert(type(button) == 'string',
+    'button should be a GamepadButton (string)')
+  assert(type(gamepadNum) == 'number',
+    'gamepadNum should be a number')
+
   return function()
-    local gamepad = tactile.gamepads[gamepadNum]
+    local gamepad = love.joystick.getJoysticks()[gamepadNum]
     return gamepad and gamepad:isGamepadDown(button)
   end
 end
 
 function tactile.mouseButton(button)
+  assert(type(button) == 'string',
+    'button should be a GamepadButton (string)')
+
   return function()
     return love.mouse.isDown(button)
   end
 end
 
 function tactile.thresholdButton(axisDetector, threshold)
+  assert(axisDetector, 'No axisDetector supplied')
+  assert(type(threshold) == 'number',
+    'threshold should be a number')
+
   return function()
     local value = axisDetector()
     return value and math.abs(value) > math.abs(threshold) and (value < 0) == (threshold < 0)
@@ -129,6 +138,9 @@ end
 
 --axis detectors
 function tactile.binaryAxis(negative, positive)
+  assert(negative, 'No negative button detector supplied')
+  assert(positive, 'No positive button detector supplied')
+
   return function()
     local negativeValue, positiveValue = negative(), positive()
     if negativeValue and not positiveValue then
@@ -142,8 +154,13 @@ function tactile.binaryAxis(negative, positive)
 end
 
 function tactile.analogStick(axis, gamepadNum)
+  assert(type(axis) == 'string',
+    'axis should be a GamepadAxis (string)')
+  assert(type(gamepadNum) == 'number',
+    'gamepadNum should be a number')
+
   return function()
-    local gamepad = tactile.gamepads[gamepadNum]
+    local gamepad = love.joystick.getJoysticks()[gamepadNum]
     return gamepad and gamepad:getGamepadAxis(axis) or 0
   end
 end
@@ -161,7 +178,8 @@ end
 --axis constructor
 function tactile.newAxis(...)
   local axisInstance = {
-    detectors = {...}
+    detectors = {...},
+    deadzone  = 0.5
   }
   return setmetatable(axisInstance, Axis)
 end

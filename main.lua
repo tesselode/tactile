@@ -75,6 +75,8 @@ function love.load()
   axis = {}
   axis.horizontal = tactile.newAxis(gamepadXAxis, keyboardXAxis)
   axis.vertical   = tactile.newAxis(gamepadYAxis, keyboardYAxis)
+  axis.horizontal.deadzone = .25
+  axis.vertical.deadzone = .25
 
   upButtonDisplay      = ButtonDisplay(50, 0, button.up)
   leftButtonDisplay    = ButtonDisplay(0, 50, button.left)
@@ -101,9 +103,9 @@ function love.draw()
 
   love.graphics.setColor(255, 255, 255, 255)
   love.graphics.rectangle('line', -100, -100, 200, 200)
-  love.graphics.rectangle('line', -tactile.deadzone * 100, -tactile.deadzone * 100, tactile.deadzone * 200, tactile.deadzone * 200)
+  love.graphics.rectangle('line', -.25 * 100, -.25 * 100, .25 * 200, .25 * 200)
   love.graphics.circle('fill', axis.horizontal:getValue() * 100, axis.vertical:getValue() * 100, 5, 100)
-  love.graphics.printf('The square represents two axes. It can be operated by the left analog stick on joystick 1 or the arrow keys. The inner square is the deadzone.', -75, 120, 150, 'center')
+  love.graphics.printf('The square represents two axes. It can be operated by the left analog stick on joystick 1 or the arrow keys. The inner square is the deadzone (custom set to 25%).', -75, 120, 150, 'center')
 
   love.graphics.pop()
 
@@ -114,7 +116,7 @@ function love.draw()
   leftButtonDisplay:draw()
   downButtonDisplay:draw()
   rightButtonDisplay:draw()
-  love.graphics.printf('These are 4 directional buttons. They light up when held down, and flash when pressed or released. These can be operated by both the left analog stick on joystick 1 and the arrow keys.', 0, 220, 150, 'center')
+  love.graphics.printf('These are 4 directional buttons. They light up when held down, and flash when pressed or released. These can be operated by both the left analog stick on joystick 1 and the arrow keys. These particular ones are set with a threshold of 0.5.', 0, 220, 150, 'center')
 
   love.graphics.pop()
 
