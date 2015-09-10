@@ -75,7 +75,7 @@ function Axis:getValue()
   --check whether any detectors have a value greater than the deadzone
   for _, detector in pairs(self.detectors) do
     local value = detector()
-    if math.abs(value) > tactile.deadzone then
+    if math.abs(value) > self.deadzone then
       self.value = value
     end
   end
@@ -93,7 +93,6 @@ end
 
 --main module
 tactile.__index = tactile
-tactile.deadzone = .25
 tactile.gamepads = love.joystick.getJoysticks()
 
 function tactile.rescan()
@@ -161,7 +160,8 @@ end
 --axis constructor
 function tactile.newAxis(...)
   local axisInstance = {
-    detectors = {...}
+    detectors = {...},
+    deadzone  = 0.5
   }
   return setmetatable(axisInstance, Axis)
 end
