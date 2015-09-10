@@ -116,7 +116,7 @@ function love.draw()
   leftButtonDisplay:draw()
   downButtonDisplay:draw()
   rightButtonDisplay:draw()
-  love.graphics.printf('These are 4 directional buttons. They light up when held down, and flash when pressed or released. These can be operated by both the left analog stick on joystick 1 and the arrow keys.', 0, 220, 150, 'center')
+  love.graphics.printf('These are 4 directional buttons. They light up when held down, and flash when pressed or released. These can be operated by both the left analog stick on joystick 1 and the arrow keys. These particular ones are set with a threshold of 0.5.', 0, 220, 150, 'center')
 
   love.graphics.pop()
 
