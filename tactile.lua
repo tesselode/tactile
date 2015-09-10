@@ -45,8 +45,8 @@ function Button:update()
   self.down = false
 
   --check whether any detectors are down
-  for _, detector in pairs(self.detectors) do
-    if detector() then
+  for i = 1, #self.detectors do
+    if self.detectors[i]() then
       self.down = true
       break
     end
@@ -73,8 +73,8 @@ function Axis:getValue()
   self.value = 0
 
   --check whether any detectors have a value greater than the deadzone
-  for _, detector in pairs(self.detectors) do
-    local value = detector()
+  for i = 1, #self.detectors do
+    local value = self.detectors[i]()
     if math.abs(value) > self.deadzone then
       self.value = value
     end
