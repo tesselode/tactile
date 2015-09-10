@@ -96,12 +96,20 @@ tactile.__index = tactile
 
 --button detectors
 function tactile.key(key)
+  assert(type(key) == 'string',
+    'key should be a KeyConstant (string)')
+
   return function()
     return love.keyboard.isDown(key)
   end
 end
 
 function tactile.gamepadButton(button, gamepadNum)
+  assert(type(button) == 'string',
+    'button should be a GamepadButton (string)')
+  assert(type(gamepadNum) == 'number',
+    'gamepadNum should be a number')
+
   return function()
     local gamepad = love.joystick.getJoysticks()[gamepadNum]
     return gamepad and gamepad:isGamepadDown(button)
@@ -109,12 +117,19 @@ function tactile.gamepadButton(button, gamepadNum)
 end
 
 function tactile.mouseButton(button)
+  assert(type(button) == 'string',
+    'button should be a GamepadButton (string)')
+
   return function()
     return love.mouse.isDown(button)
   end
 end
 
 function tactile.thresholdButton(axisDetector, threshold)
+  assert(axisDetector, 'No axisDetector supplied')
+  assert(type(threshold) == 'number',
+    'threshold should be a number')
+
   return function()
     local value = axisDetector()
     return value and math.abs(value) > math.abs(threshold) and (value < 0) == (threshold < 0)
@@ -123,6 +138,9 @@ end
 
 --axis detectors
 function tactile.binaryAxis(negative, positive)
+  assert(negative, 'No negative button detector supplied')
+  assert(positive, 'No positive button detector supplied')
+
   return function()
     local negativeValue, positiveValue = negative(), positive()
     if negativeValue and not positiveValue then
@@ -136,6 +154,11 @@ function tactile.binaryAxis(negative, positive)
 end
 
 function tactile.analogStick(axis, gamepadNum)
+  assert(type(axis) == 'string',
+    'axis should be a GamepadAxis (string)')
+  assert(type(gamepadNum) == 'number',
+    'gamepadNum should be a number')
+
   return function()
     local gamepad = love.joystick.getJoysticks()[gamepadNum]
     return gamepad and gamepad:getGamepadAxis(axis) or 0
