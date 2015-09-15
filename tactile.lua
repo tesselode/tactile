@@ -117,8 +117,15 @@ function tactile.gamepadButton(button, gamepadNum)
 end
 
 function tactile.mouseButton(button)
-  assert(type(button) == 'string',
-    'button should be a GamepadButton (string)')
+  local major, minor, revision = love.getVersion()
+  local t = "string"
+  
+  -- LOVE 0.10+ switched from strings (l, r, m) to numbers (1, 2, 3)
+  if minor > 9 then
+    t = "number"
+  end
+  assert(type(button) == t,
+    'button should be a MouseButton ('..t..')')
 
   return function()
     return love.mouse.isDown(button)
