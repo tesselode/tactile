@@ -1,5 +1,5 @@
 local tactile = {
-  _VERSION     = 'Tactile v1.1.0',
+  _VERSION     = 'Tactile v1.1.1',
   _DESCRIPTION = 'A simple and straightfoward input library for LÖVE.',
   _URL         = 'https://github.com/tesselode/tactile',
   _LICENSE     = [[
