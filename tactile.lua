@@ -61,9 +61,20 @@ function Button:removeDetector(detector)
   removeByValue(self.detectors, detector)
 end
 
-function Button:isDown() return self.down end
-function Button:pressed() return self.down and not self.downPrev end
-function Button:released() return self.downPrev and not self.down end
+function Button:isDown()
+  self:update()
+  return self.down
+end
+
+function Button:pressed()
+  self:update()
+  return self.down and not self.downPrev
+end
+
+function Button:released()
+  self:update()
+  return self.downPrev and not self.down
+end
 
 --axis class
 local Axis = {}
@@ -119,7 +130,7 @@ end
 function tactile.mouseButton(button)
   local major, minor, revision = love.getVersion()
   local t = "string"
-  
+
   -- LOVE 0.10+ switched from strings (l, r, m) to numbers (1, 2, 3)
   if minor > 9 then
     t = "number"

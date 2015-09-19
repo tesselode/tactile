@@ -86,10 +86,6 @@ function love.load()
 end
 
 function love.update(dt)
-  for k, v in pairs(button) do
-    v:update()
-  end
-
   upButtonDisplay:update(dt)
   leftButtonDisplay:update(dt)
   downButtonDisplay:update(dt)
