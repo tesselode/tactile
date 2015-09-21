@@ -30,6 +30,9 @@ function love.load()
 end
 
 function love.update(dt)
+  --you have to update buttons, sorry for the extra step :(
+  shoot:update()
+
   --movement
   player.x = player.x + player.speed * horizontal:getValue() * dt
 
@@ -96,6 +99,10 @@ Creates a new button.
 
 - `...` is a list of button detectors the button should use.
 
+`button:update()`
+
+Updates the button. Call this once per frame. Sorry you have to do this.
+
 `button:addDetector(detector)`
 
 Adds a button detector to the button.
@@ -119,10 +126,6 @@ Returns whether the button was just pressed this frame.
 `button:released()`
 
 Returns whether the button was just released this frame.
-
-`button:update()`
-
-Updates the button. This is called automatically by `isDown`, `pressed`, and `released`, so you shouldn't have to call it manually. You can if you want, though.
 
 ###Axis detectors
 
