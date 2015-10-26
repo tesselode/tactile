@@ -157,6 +157,8 @@ Creates an axis detector that responds to two button detectors. If both or neith
 
 Axes are containers for axis detectors. The value of the axis will be set to the last non-zero value from the list of axis detectors (accounting for deadzone). You should consider which input methods you want to take precedence to decide the order to add axis detectors in.
 
+You can change the deadzone of the axis by setting `axis.deadzone`. Each axis has an individual deadzone setting. By default, it is 0.5.
+
 `axis = tactile.newAxis(...)`
 
 Creates a new axis.
@@ -175,8 +177,8 @@ Removes an axis detector from the axis.
 
 - `detector` is the axis detector to remove.
 
-`axis:getValue()`
+`axis:getValue(deadzone)`
 
 Returns the current value of the axis.
 
-You can change the deadzone of the axis by setting `axis.deadzone`. Each axis has an individual deadzone setting. By default, it is 0.5.
+- `deadzone` is the deadzone to use. Leave this blank to use `axis.deadzone`.
