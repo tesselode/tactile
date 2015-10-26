@@ -69,13 +69,14 @@ function Button:released() return self.downPrev and not self.down end
 local Axis = {}
 Axis.__index = Axis
 
-function Axis:getValue()
+function Axis:getValue(deadzone)
+  deadzone = deadzone or self.deadzone
   self.value = 0
 
   --check whether any detectors have a value greater than the deadzone
   for i = 1, #self.detectors do
     local value = self.detectors[i]()
-    if math.abs(value) > self.deadzone then
+    if math.abs(value) > deadzone then
       self.value = value
     end
   end
@@ -119,7 +120,7 @@ end
 function tactile.mouseButton(button)
   local major, minor, revision = love.getVersion()
   local t = "string"
-  
+
   -- LOVE 0.10+ switched from strings (l, r, m) to numbers (1, 2, 3)
   if minor > 9 then
     t = "number"
