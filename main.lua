@@ -55,7 +55,7 @@ function love.load()
   gamepadA      = tactile.gamepadButton('a', 1)
   gamepadXAxis  = tactile.analogStick('leftx', 1)
   gamepadYAxis  = tactile.analogStick('lefty', 1)
-  mouseLeft     = tactile.mouseButton('l')
+  mouseLeft     = tactile.mouseButton(1)
 
   --weird detectors that depend on other detectors
   gamepadLeft   = tactile.thresholdButton(gamepadXAxis, -.5)
