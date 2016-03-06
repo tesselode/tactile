@@ -96,28 +96,35 @@ end
 tactile.__index = tactile
 
 --button detectors
-function tactile.key(key)
-  assert(type(key) == 'string',
-    'key should be a KeyConstant (string)')
+function tactile.keys(...)
+  for i = 1, select('#', ...) do
+    assert(type(select(i, ...)) == 'string',
+      'key ' .. i .. ' should be a KeyConstant (string)')
+  end
 
+  local keys = {...}
   return function()
-    return love.keyboard.isDown(key)
+    return love.keyboard.isDown(unpack(keys))
   end
 end
 
-function tactile.gamepadButton(button, gamepadNum)
-  assert(type(button) == 'string',
-    'button should be a GamepadButton (string)')
+function tactile.gamepadButtons(gamepadNum, ...)
   assert(type(gamepadNum) == 'number',
     'gamepadNum should be a number')
 
+  for i = 1, select('#', ...) do
+    assert(type(select(i, ...)) == 'string',
+      'button ' .. i .. ' should be a GamepadButton (string)')
+  end
+
+  local buttons = {...}
   return function()
     local gamepad = love.joystick.getJoysticks()[gamepadNum]
-    return gamepad and gamepad:isGamepadDown(button)
+    return gamepad and gamepad:isGamepadDown(unpack(buttons))
   end
 end
 
-function tactile.mouseButton(button)
+function tactile.mouseButtons(...)
   local major, minor, revision = love.getVersion()
   local t = "string"
 
@@ -125,11 +132,15 @@ function tactile.mouseButton(button)
   if minor > 9 then
     t = "number"
   end
-  assert(type(button) == t,
-    'button should be a MouseButton ('..t..')')
 
+  for i = 1, select('#', ...) do
+    assert(type(select(i, ...)) == t,
+      'button ' .. i .. ' should be a MouseButton ('..t..')')
+  end
+
+  local buttons = {...}
   return function()
-    return love.mouse.isDown(button)
+    return love.mouse.isDown(unpack(buttons))
   end
 end
 
@@ -161,7 +172,7 @@ function tactile.binaryAxis(negative, positive)
   end
 end
 
-function tactile.analogStick(axis, gamepadNum)
+function tactile.analogStick(gamepadNum, axis)
   assert(type(axis) == 'string',
     'axis should be a GamepadAxis (string)')
   assert(type(gamepadNum) == 'number',
