@@ -36,6 +36,12 @@ local function removeByValue(t, value)
   end
 end
 
+local function verify(identity, argnum, arg, argtype, expected)
+  if type(arg) ~= argtype then
+    error(("%s: argument %d should be a %s (got %s)"):format(identity, argnum, expected or argtype, type(arg)), 3)
+  end
+end
+
 --button class
 local Button = {}
 Button.__index = Button
@@ -98,8 +104,7 @@ tactile.__index = tactile
 --button detectors
 function tactile.keys(...)
   for i = 1, select('#', ...) do
-    assert(type(select(i, ...)) == 'string',
-      'key ' .. i .. ' should be a KeyConstant (string)')
+    verify('tactile.keys', i, select(i, ...), 'string', 'KeyConstant (string)')
   end
 
   local keys = {...}
@@ -109,12 +114,10 @@ function tactile.keys(...)
 end
 
 function tactile.gamepadButtons(gamepadNum, ...)
-  assert(type(gamepadNum) == 'number',
-    'gamepadNum should be a number')
+  verify('tactile.gamepadButtons', 1, gamepadNum, 'number')
 
   for i = 1, select('#', ...) do
-    assert(type(select(i, ...)) == 'string',
-      'button ' .. i .. ' should be a GamepadButton (string)')
+    verify('tactile.gamepadButtons', i + 1, select(i, ...), 'string', 'GamepadButton (string)')
   end
 
   local buttons = {...}
@@ -134,8 +137,7 @@ function tactile.mouseButtons(...)
   end
 
   for i = 1, select('#', ...) do
-    assert(type(select(i, ...)) == t,
-      'button ' .. i .. ' should be a MouseButton ('..t..')')
+    verify('tactile.mouseButtons', i, select(i, ...), t, 'MouseButton ('..t..')')
   end
 
   local buttons = {...}
@@ -145,9 +147,8 @@ function tactile.mouseButtons(...)
 end
 
 function tactile.thresholdButton(axisDetector, threshold)
-  assert(axisDetector, 'No axisDetector supplied')
-  assert(type(threshold) == 'number',
-    'threshold should be a number')
+  verify('tactile.thresholdButton', 1, axisDetector, 'function', 'Axis Detector (function)')
+  verify('tactile.thresholdButton', 2, threshold, 'number', 'a number between -1 and 1')
 
   return function()
     local value = axisDetector()
@@ -157,8 +158,8 @@ end
 
 --axis detectors
 function tactile.binaryAxis(negative, positive)
-  assert(negative, 'No negative button detector supplied')
-  assert(positive, 'No positive button detector supplied')
+  verify('tactile.binaryAxis', 1, negative, 'function', 'Axis Detector (function)')
+  verify('tactile.binaryAxis', 2, positive, 'function', 'Axis Detector (function)')
 
   return function()
     local negativeValue, positiveValue = negative(), positive()
@@ -173,10 +174,8 @@ function tactile.binaryAxis(negative, positive)
 end
 
 function tactile.analogStick(gamepadNum, axis)
-  assert(type(axis) == 'string',
-    'axis should be a GamepadAxis (string)')
-  assert(type(gamepadNum) == 'number',
-    'gamepadNum should be a number')
+  verify('tactile.analogStick', 1, gamepadNum, 'number')
+  verify('tactile.analogStick', 2, axis, 'string', 'GamepadAxis (string)')
 
   return function()
     local gamepad = love.joystick.getJoysticks()[gamepadNum]
@@ -186,6 +185,10 @@ end
 
 --button constructor
 function tactile.newButton(...)
+  for i = 1, select('#', ...) do
+    verify('tactile.newButton', i, select(i, ...), 'function', 'Detector (function)')
+  end
+
   local buttonInstance = {
     detectors = {...},
     down      = false,
@@ -196,6 +199,10 @@ end
 
 --axis constructor
 function tactile.newAxis(...)
+  for i = 1, select('#', ...) do
+    verify('tactile.newAxis', i, select(i, ...), 'function', 'Detector (function)')
+  end
+
   local axisInstance = {
     detectors = {...},
     deadzone  = 0.5
