@@ -183,6 +183,15 @@ function tactile.binaryAxis(negative, positive)
   end
 end
 
+function tactile.booleanAxis(buttonDetector, whenTrue, whenFalse)
+  verify('tactile.booleanAxis', 1, buttonDetector, 'function', 'Button Detector (function)')
+  verify('tactile.booleanAxis', 2, whenTrue, 'number')
+  verify('tactile.booleanAxis', 3, whenFalse, 'number')
+  return function()
+    return buttonDetector() and whenTrue or whenFalse
+  end
+end
+
 function tactile.analogStick(gamepadNum, axis)
   verify('tactile.analogStick', 1, gamepadNum, 'number')
   verify('tactile.analogStick', 2, axis, 'string', 'GamepadAxis (string)')

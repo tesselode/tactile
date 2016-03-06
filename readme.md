@@ -159,6 +159,14 @@ Creates an axis detector that responds to two button detectors. If both or neith
 - `negative` is the button detector on the negative side.
 - `positive` is the button detector on the positive side.
 
+`detector = tactile.booleanAxis(buttonDetector, whenTrue, whenFalse)`
+
+Creates an axis detector that reports a value depending on the button detector's state, similarly to `tactile.binaryAxis`. This allows you to report any value given any other kind of input.
+
+- `buttonDetector` is a button detector.
+- `whenTrue` is the axis value set when the button detector is down.
+- `whenFalse` is the axis value set when the button detector is not down.
+
 ###Axes
 
 Axes are containers for axis detectors. The value of the axis will be set to the last non-zero value from the list of axis detectors (accounting for deadzone). You should consider which input methods you want to take precedence to decide the order to add axis detectors in.
