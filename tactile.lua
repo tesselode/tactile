@@ -80,13 +80,14 @@ function Axis:getValue(deadzone)
   self.value = 0
 
   --check whether any detectors have a value greater than the deadzone
-  for i = #self.detectors, 1, -1 do
+  for i = 1, #self.detectors do
     local value = self.detectors[i]()
     if math.abs(value) > deadzone then
       self.value = value
-      return value
     end
   end
+
+  return self.value
 end
 
 function Axis:addDetector(detector)
