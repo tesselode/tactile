@@ -47,10 +47,10 @@ function love.load()
   tactile = require 'tactile'
 
   --basic detectors
-  keyboardLeft  = tactile.keys('left')
-  keyboardRight = tactile.keys('right')
-  keyboardUp    = tactile.keys('up')
-  keyboardDown  = tactile.keys('down')
+  keyboardLeft  = tactile.keys('left', 'a')
+  keyboardRight = tactile.keys('right', 'd')
+  keyboardUp    = tactile.keys('up', 'w')
+  keyboardDown  = tactile.keys('down', 's')
   keyboardX     = tactile.keys('x')
   gamepadA      = tactile.gamepadButtons(1, 'a')
   gamepadXAxis  = tactile.analogStick(1, 'leftx')
