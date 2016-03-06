@@ -65,9 +65,15 @@ Tactile comes with a few functions that create some commonly used button detecto
 
 `detector = tactile.keys(...)`
 
-Creates a button detector that is activated if any of the given keyboard keys are held down.
+Creates a button detector that is activated if any of the keyboard keys are held down.
 
 - `...` are the `KeyConstant`s to check for.
+
+`detector = tactile.scancodes(...)`
+
+Creates a button detector that is activated if any of the keyboard keys are held down.
+
+- `...` are the `Scancode`s to check for.
 
 `detector = tactile.gamepadButton(gamepadNum, ...)`
 

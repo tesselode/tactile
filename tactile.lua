@@ -112,6 +112,17 @@ function tactile.keys(...)
   end
 end
 
+function tactile.scancodes(...)
+  for i = 1, select('#', ...) do
+    verify('tactile.scancodes', i, select(i, ...), 'string', 'Scancode (string)')
+  end
+
+  local keys = {...}
+  return function()
+    return love.keyboard.isScancodeDown(unpack(keys))
+  end
+end
+
 function tactile.gamepadButtons(gamepadNum, ...)
   verify('tactile.gamepadButtons', 1, gamepadNum, 'number')
 
