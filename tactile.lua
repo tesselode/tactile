@@ -125,15 +125,13 @@ function tactile.scancodes(...)
 end
 
 function tactile.gamepadButtons(gamepadNum, ...)
-  verify('tactile.gamepadButtons', 1, gamepadNum, 'number')
-
   for i = 1, select('#', ...) do
     verify('tactile.gamepadButtons', i + 1, select(i, ...), 'string', 'GamepadButton (string)')
   end
 
   local buttons = {...}
   return function()
-    local gamepad = love.joystick.getJoysticks()[gamepadNum]
+    local gamepad = type(gamepadNum) == 'number' and love.joystick.getJoysticks()[gamepadNum] or gamepadNum
     return gamepad and gamepad:isGamepadDown(unpack(buttons))
   end
 end
@@ -194,11 +192,10 @@ function tactile.booleanAxis(buttonDetector, whenTrue, whenFalse)
 end
 
 function tactile.gamepadAxis(gamepadNum, axis)
-  verify('tactile.analogStick', 1, gamepadNum, 'number')
   verify('tactile.analogStick', 2, axis, 'string', 'GamepadAxis (string)')
 
   return function()
-    local gamepad = love.joystick.getJoysticks()[gamepadNum]
+    local gamepad = type(gamepadNum) == 'number' and love.joystick.getJoysticks()[gamepadNum] or gamepadNum
     return gamepad and gamepad:getGamepadAxis(axis) or 0
   end
 end
