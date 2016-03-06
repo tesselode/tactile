@@ -145,9 +145,9 @@ end
 
 Tactile comes with a few functions that create some commonly used axis detectors.
 
-`detector = tactile.analogStick(gamepadNum, axis)`
+`detector = tactile.gamepadAxis(gamepadNum, axis)`
 
-Creates an axis detector that responds to an analog stick.
+Creates an axis detector that responds to a gamepad axis.
 
 - `gamepadNum` is the number of the gamepad that should be checked.
 - `axis` is the `GamepadAxis` to check for.

@@ -53,8 +53,8 @@ function love.load()
   keyboardDown  = tactile.keys('down', 's')
   keyboardX     = tactile.keys('x')
   gamepadA      = tactile.gamepadButtons(1, 'a')
-  gamepadXAxis  = tactile.analogStick(1, 'leftx')
-  gamepadYAxis  = tactile.analogStick(1, 'lefty')
+  gamepadXAxis  = tactile.gamepadAxis(1, 'leftx')
+  gamepadYAxis  = tactile.gamepadAxis(1, 'lefty')
   mouseLeft     = tactile.mouseButtons(1)
 
   --weird detectors that depend on other detectors
