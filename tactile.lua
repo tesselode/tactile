@@ -12,15 +12,27 @@ end
 local Control = {}
 
 function Control:addAxisDetector(f)
-  table.insert(self.axisDetectors, f)
+  table.insert(self.detectors, f)
 end
 
 function Control:addPositiveButtonDetector(f)
-  table.insert(self.positiveButtonDetectors, f)
+  table.insert(self.detectors, function()
+    if f() then
+      return 1
+    else
+      return 0
+    end
+  end)
 end
 
 function Control:addNegativeButtonDetector(f)
-  table.insert(self.negativeButtonDetectors, f)
+  table.insert(self.detectors, function()
+    if f() then
+      return -1
+    else
+      return 0
+    end
+  end)
 end
 
 function Control:addButtonDetectors(negative, positive)
@@ -29,36 +41,19 @@ function Control:addButtonDetectors(negative, positive)
 end
 
 function Control:getValue()
-  local negativeDown = any(self.negativeButtonDetectors, function(f)
-    return f()
-  end)
-  local positiveDown = any(self.positiveButtonDetectors, function(f)
-    return f()
-  end)
-
-  if negativeDown and positiveDown then
-    return 0
-  elseif negativeDown then
-    return -1
-  elseif positiveDown then
-    return 1
-  else
-    for i = #self.axisDetectors, 1, -1 do
-      local value = self.axisDetectors[i]()
-      if math.abs(value) > self.deadzone then
-        return value
-      end
+  for i = #self.detectors, 1, -1 do
+    local value = self.detectors[i]()
+    if math.abs(value) > self.deadzone then
+      return value
     end
-    return 0
   end
+  return 0
 end
 
 function tactile.newControl()
   local control = {
     deadzone = .5,
-    axisDetectors = {},
-    positiveButtonDetectors = {},
-    negativeButtonDetectors = {},
+    detectors = {},
   }
 
   setmetatable(control, {__index = Control})

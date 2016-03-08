@@ -1,10 +1,7 @@
 local tactile = require 'tactile'
 
 local horizontal = tactile.newControl()
-horizontal:addAxisDetector(function()
-  return love.joystick.getJoysticks()[1]:getGamepadAxis 'leftx'
-end)
-horizontal:addButtonDetectors(function()
+horizontal:addButtonPair(function()
   return love.keyboard.isDown 'left'
 end, function()
   return love.keyboard.isDown 'right'
@@ -13,6 +10,9 @@ horizontal:addButtonDetectors(function()
   return love.keyboard.isDown 'a'
 end, function()
   return love.keyboard.isDown 'd'
+end)
+horizontal:addAxisDetector(function()
+  return love.joystick.getJoysticks()[1]:getGamepadAxis 'leftx'
 end)
 
 function love.keypressed(key)
