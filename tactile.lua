@@ -9,6 +9,14 @@ local function any(t, f)
   return false
 end
 
+local function sign(x)
+  if x < 0 then
+    return -1
+  else
+    return 0
+  end
+end
+
 local Control = {}
 
 function Control:addAxisDetector(f)
@@ -61,46 +69,36 @@ function Control:getValue()
 end
 
 function Control:isDown(dir)
-  if dir then
-    return (self:getValue() < 0) == (dir < 0)
-  else
-    return self:getValue() ~= 0
+  if self:getValue() == 0 then
+    return false
   end
+  if dir then
+    if sign(dir) ~= sign(self:getValue()) then
+      return false
+    end
+  end
+  return true
 end
 
 function Control:pressed(dir)
-  if self._downPrevious or not self._downCurrent then
-    return false
-  end
-  if dir then
-    return (self:getValue() < 0) == (dir < 0)
-  else
-    return true
-  end
+  return false
 end
 
-function Control:released()
-  if self._downCurrent or not self._downPrevious then
-    return false
-  end
-  if dir then
-    return (self:getValue() < 0) == (dir < 0)
-  else
-    return true
-  end
+function Control:released(dir)
+  return false
 end
 
 function Control:update()
-  self._downPrevious = self._downCurrent
-  self._downCurrent = self:isDown()
+  self._previousValue = self._currentValue
+  self._currentValue = self:getValue()
 end
 
 function tactile.newControl()
   local control = {
     deadzone = .5,
     _detectors = {},
-    _downCurrent = false,
-    _downPrevious = false,
+    _currentValue = 0,
+    _previousValue = 0,
   }
 
   setmetatable(control, {__index = Control})

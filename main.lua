@@ -31,5 +31,5 @@ function love.keypressed(key)
 end
 
 function love.draw()
-  love.graphics.print(tostring(horizontal:isDown(-1)))
+  love.graphics.print(tostring(horizontal:isDown()))
 end
