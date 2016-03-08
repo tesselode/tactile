@@ -18,10 +18,10 @@ end)
 function love.update(dt)
   horizontal:update()
 
-  if horizontal:pressed() then
+  if horizontal:pressed(-1) then
     print 'pressed'
   end
-  if horizontal:released() then
+  if horizontal:released(1) then
     print 'released'
   end
 end
@@ -31,5 +31,5 @@ function love.keypressed(key)
 end
 
 function love.draw()
-  love.graphics.print(horizontal:getValue())
+  love.graphics.print(tostring(horizontal:isDown(-1)))
 end

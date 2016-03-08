@@ -60,16 +60,34 @@ function Control:getValue()
   return 0
 end
 
-function Control:isDown()
-  return self:getValue() ~= 0
+function Control:isDown(dir)
+  if dir then
+    return (self:getValue() < 0) == (dir < 0)
+  else
+    return self:getValue() ~= 0
+  end
 end
 
-function Control:pressed()
-  return self._downCurrent and not self._downPrevious
+function Control:pressed(dir)
+  if self._downPrevious or not self._downCurrent then
+    return false
+  end
+  if dir then
+    return (self:getValue() < 0) == (dir < 0)
+  else
+    return true
+  end
 end
 
 function Control:released()
-  return self._downPrevious and not self._downCurrent
+  if self._downCurrent or not self._downPrevious then
+    return false
+  end
+  if dir then
+    return (self:getValue() < 0) == (dir < 0)
+  else
+    return true
+  end
 end
 
 function Control:update()
