@@ -18,10 +18,10 @@ end)
 function love.update(dt)
   horizontal:update()
 
-  if horizontal:pressed(-1) then
+  if horizontal:pressed() then
     print 'pressed'
   end
-  if horizontal:released(1) then
+  if horizontal:released() then
     print 'released'
   end
 end

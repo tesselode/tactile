@@ -73,7 +73,7 @@ function Control:isDown(dir)
     return false
   end
   if dir then
-    if sign(dir) ~= sign(self:getValue()) then
+    if sign(self:getValue()) ~= sign(dir) then
       return false
     end
   end
@@ -81,11 +81,27 @@ function Control:isDown(dir)
 end
 
 function Control:pressed(dir)
-  return false
+  if self._currentValue == 0 or self._previousValue ~= 0 then
+    return false
+  end
+  if dir then
+    if sign(self._currentValue) ~= sign(dir) then
+      return false
+    end
+  end
+  return true
 end
 
 function Control:released(dir)
-  return false
+  if self._previousValue == 0 or self._currentValue ~= 0 then
+    return false
+  end
+  if dir then
+    if sign(self._previousValue) ~= sign(dir) then
+      return false
+    end
+  end
+  return true
 end
 
 function Control:update()
