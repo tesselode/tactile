@@ -12,11 +12,11 @@ end
 local Control = {}
 
 function Control:addAxisDetector(f)
-  table.insert(self.detectors, f)
+  table.insert(self._detectors, f)
 end
 
 function Control:addPositiveButtonDetector(f)
-  table.insert(self.detectors, function()
+  table.insert(self._detectors, function()
     if f() then
       return 1
     else
@@ -26,7 +26,7 @@ function Control:addPositiveButtonDetector(f)
 end
 
 function Control:addNegativeButtonDetector(f)
-  table.insert(self.detectors, function()
+  table.insert(self._detectors, function()
     if f() then
       return -1
     else
@@ -36,7 +36,7 @@ function Control:addNegativeButtonDetector(f)
 end
 
 function Control:addButtonPair(negative, positive)
-  table.insert(self.detectors, function()
+  table.insert(self._detectors, function()
     local n, p = negative(), positive()
     if n and p then
       return 0
@@ -51,8 +51,8 @@ function Control:addButtonPair(negative, positive)
 end
 
 function Control:getValue()
-  for i = #self.detectors, 1, -1 do
-    local value = self.detectors[i]()
+  for i = #self._detectors, 1, -1 do
+    local value = self._detectors[i]()
     if math.abs(value) > self.deadzone then
       return value
     end
@@ -60,10 +60,29 @@ function Control:getValue()
   return 0
 end
 
+function Control:isDown()
+  return self:getValue() ~= 0
+end
+
+function Control:pressed()
+  return self._downCurrent and not self._downPrevious
+end
+
+function Control:released()
+  return self._downPrevious and not self._downCurrent
+end
+
+function Control:update()
+  self._downPrevious = self._downCurrent
+  self._downCurrent = self:isDown()
+end
+
 function tactile.newControl()
   local control = {
     deadzone = .5,
-    detectors = {},
+    _detectors = {},
+    _downCurrent = false,
+    _downPrevious = false,
   }
 
   setmetatable(control, {__index = Control})

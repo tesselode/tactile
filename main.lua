@@ -15,6 +15,17 @@ horizontal:addAxisDetector(function()
   return love.joystick.getJoysticks()[1]:getGamepadAxis 'leftx'
 end)
 
+function love.update(dt)
+  horizontal:update()
+
+  if horizontal:pressed() then
+    print 'pressed'
+  end
+  if horizontal:released() then
+    print 'released'
+  end
+end
+
 function love.keypressed(key)
   if key == 'escape' then love.event.quit() end
 end
