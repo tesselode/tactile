@@ -35,9 +35,19 @@ function Control:addNegativeButtonDetector(f)
   end)
 end
 
-function Control:addButtonDetectors(negative, positive)
-  self:addNegativeButtonDetector(negative)
-  self:addPositiveButtonDetector(positive)
+function Control:addButtonPair(negative, positive)
+  table.insert(self.detectors, function()
+    local n, p = negative(), positive()
+    if n and p then
+      return 0
+    elseif n then
+      return -1
+    elseif p then
+      return 1
+    else
+      return 0
+    end
+  end)
 end
 
 function Control:getValue()

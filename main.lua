@@ -6,7 +6,7 @@ horizontal:addButtonPair(function()
 end, function()
   return love.keyboard.isDown 'right'
 end)
-horizontal:addButtonDetectors(function()
+horizontal:addButtonPair(function()
   return love.keyboard.isDown 'a'
 end, function()
   return love.keyboard.isDown 'd'
