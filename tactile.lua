@@ -122,16 +122,16 @@ function tactile.newControl()
 end
 
 function tactile.keys(...)
-  local args = {...}
+  local keys = {...}
   return function()
-    return love.keyboard.isDown(unpack(args))
+    return love.keyboard.isDown(unpack(keys))
   end
 end
 
 function tactile.gamepadButtons(num, ...)
-  local args = {...}
+  local buttons = {...}
   return function()
-    return love.joystick.getJoysticks()[num]:isGamepadDown(unpack(args))
+    return love.joystick.getJoysticks()[num]:isGamepadDown(unpack(buttons))
   end
 end
 
