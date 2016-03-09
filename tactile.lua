@@ -19,11 +19,11 @@ end
 
 local Control = {}
 
-function Control:addAxisDetector(f)
+function Control:addAxis(f)
   table.insert(self._detectors, f)
 end
 
-function Control:addPositiveButtonDetector(f)
+function Control:addButton(f)
   table.insert(self._detectors, function()
     if f() then
       return 1

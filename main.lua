@@ -5,7 +5,7 @@ horizontal:addButtonPair(
   tactile.keys('left', 'a'),
   tactile.keys('right', 'd')
 )
-horizontal:addAxisDetector(tactile.gamepadAxis(1, 'leftx'))
+horizontal:addAxis(tactile.gamepadAxis(1, 'leftx'))
 
 function love.update(dt)
   horizontal:update()
