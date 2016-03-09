@@ -10,11 +10,7 @@ local function any(t, f)
 end
 
 local function sign(x)
-  if x < 0 then
-    return -1
-  else
-    return 0
-  end
+  return x < 0 and -1 or x > 0 and 1 or 0
 end
 
 local Control = {}
