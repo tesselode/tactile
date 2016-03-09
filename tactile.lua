@@ -33,16 +33,6 @@ function Control:addPositiveButtonDetector(f)
   end)
 end
 
-function Control:addNegativeButtonDetector(f)
-  table.insert(self._detectors, function()
-    if f() then
-      return -1
-    else
-      return 0
-    end
-  end)
-end
-
 function Control:addButtonPair(negative, positive)
   table.insert(self._detectors, function()
     local n, p = negative(), positive()
