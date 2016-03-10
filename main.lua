@@ -18,9 +18,17 @@ local boost = tactile.newControl()
   :addButton(tactile.keys 'z')
   :addButton(tactile.gamepadButtons(1, 'x'))
 
+local exit = tactile.newControl()
+  :addButton(tactile.keys 'escape')
+
 local player = {x = 400, y = 300}
 
 function love.update(dt)
+  horizontal:update()
+  vertical:update()
+  boost:update()
+  exit:update()
+
   local inputVector = {x = horizontal:getValue(), y = vertical:getValue()}
   local len = (inputVector.x^2 + inputVector.y^2)^.5
   if len > 1 then
@@ -31,6 +39,10 @@ function love.update(dt)
   local speed = boost:isDown() and 400 or 200
   player.x = player.x + speed * dt * inputVector.x
   player.y = player.y + speed * dt * inputVector.y
+
+  if exit:pressed() then
+    love.event.quit()
+  end
 end
 
 function love.draw()
