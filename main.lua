@@ -1,22 +1,22 @@
 local tactile = require 'tactile'
 
 local horizontal = tactile.newControl()
-horizontal:addAxis(tactile.gamepadAxis(1, 'leftx'))
-horizontal:addButtonPair(
-  tactile.keys('a', 'left'),
-  tactile.keys('d', 'right')
-)
+  :addAxis(tactile.gamepadAxis(1, 'leftx'))
+  :addButtonPair(
+    tactile.keys('a', 'left'),
+    tactile.keys('d', 'right')
+  )
 
 local vertical = tactile.newControl()
-vertical:addAxis(tactile.gamepadAxis(1, 'lefty'))
-vertical:addButtonPair(
-  tactile.keys('w', 'up'),
-  tactile.keys('s', 'down')
-)
+  :addAxis(tactile.gamepadAxis(1, 'lefty'))
+  :addButtonPair(
+    tactile.keys('w', 'up'),
+    tactile.keys('s', 'down')
+  )
 
 local boost = tactile.newControl()
-boost:addButton(tactile.keys 'z')
-boost:addButton(tactile.gamepadButtons(1, 'x'))
+  :addButton(tactile.keys 'z')
+  :addButton(tactile.gamepadButtons(1, 'x'))
 
 local player = {x = 400, y = 300}
 

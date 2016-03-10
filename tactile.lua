@@ -17,6 +17,7 @@ local Control = {}
 
 function Control:addAxis(f)
   table.insert(self._detectors, f)
+  return self
 end
 
 function Control:addButton(f)
@@ -27,6 +28,7 @@ function Control:addButton(f)
       return 0
     end
   end)
+  return self
 end
 
 function Control:addButtonPair(negative, positive)
@@ -42,6 +44,7 @@ function Control:addButtonPair(negative, positive)
       return 0
     end
   end)
+  return self
 end
 
 function Control:getValue()
