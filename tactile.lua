@@ -13,6 +13,12 @@ local function sign(x)
   return x < 0 and -1 or x > 0 and 1 or 0
 end
 
+local function verify(identity, argnum, value, expected, expectedstring)
+  if type(value) ~= expected then
+    error(string.format("%s: argument %d should be a %s, got %s", identity, argnum, expectedstring or expected, type(value)))
+  end
+end
+
 local Control = {}
 
 function Control:addAxis(f)
@@ -82,6 +88,9 @@ end
 
 function tactile.keys(...)
   local keys = {...}
+  for i, key in ipairs(keys) do
+    verify('tactile.keys()', i, key, 'string', 'KeyConstant (string)')
+  end
   return function()
     return love.keyboard.isDown(unpack(keys))
   end
@@ -89,12 +98,17 @@ end
 
 function tactile.gamepadButtons(num, ...)
   local buttons = {...}
+  for i, button in ipairs(buttons) do
+    verify('tactile.gamepadButtons()', i, button, 'string', 'GamepadButton (string)')
+  end
   return function()
     return love.joystick.getJoysticks()[num]:isGamepadDown(unpack(buttons))
   end
 end
 
 function tactile.gamepadAxis(num, axis)
+  verify('tactile.gamepadAxis()', 1, num, 'number')
+  verify('tactile.gamepadAxis()', 2, axis, 'string', 'GamepadAxis (string)')
   return function()
     return love.joystick.getJoysticks()[num]:getGamepadAxis(axis)
   end
