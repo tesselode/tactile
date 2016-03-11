@@ -15,7 +15,8 @@ end
 
 local function verify(identity, argnum, value, expected, expectedstring)
   if type(value) ~= expected then
-    error(string.format("%s: argument %d should be a %s, got %s", identity, argnum, expectedstring or expected, type(value)))
+    error(string.format("%s: argument %d should be a %s, got %s", identity,
+      argnum, expectedstring or expected, type(value)))
   end
 end
 
@@ -37,9 +38,9 @@ function Control:addButtonPair(negative, positive)
   table.insert(self._detectors, function()
     local n, p = negative(), positive()
     return n and p and 0
-    or n and -1
-    or p and 1
-    or 0
+      or n and -1
+      or p and 1
+      or 0
   end)
   return self
 end
@@ -61,12 +62,12 @@ end
 
 function Control:pressed(dir)
   return dir and sign(self._currentValue) == sign(dir)
-  or not (self._currentValue == 0 or self._previousValue ~= 0)
+    or not (self._currentValue == 0 or self._previousValue ~= 0)
 end
 
 function Control:released(dir)
   return dir and sign(self._previousValue) == sign(dir)
-  or not (self._previousValue == 0 or self._currentValue ~= 0)
+    or not (self._previousValue == 0 or self._currentValue ~= 0)
 end
 
 function Control:update()
@@ -99,7 +100,8 @@ end
 function tactile.gamepadButtons(num, ...)
   local buttons = {...}
   for i, button in ipairs(buttons) do
-    verify('tactile.gamepadButtons()', i, button, 'string', 'GamepadButton (string)')
+    verify('tactile.gamepadButtons()', i, button, 'string',
+      'GamepadButton (string)')
   end
   return function()
     return love.joystick.getJoysticks()[num]:isGamepadDown(unpack(buttons))
