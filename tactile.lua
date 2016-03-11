@@ -10,11 +10,7 @@ local function any(t, f)
 end
 
 local function sign(x)
-  if x < 0 then
-    return -1
-  else
-    return 0
-  end
+  return x < 0 and -1 or x > 0 and 1 or 0
 end
 
 local Control = {}
@@ -25,36 +21,23 @@ end
 
 function Control:addPositiveButtonDetector(f)
   table.insert(self._detectors, function()
-    if f() then
-      return 1
-    else
-      return 0
-    end
+    return f() and 1 or 0
   end)
 end
 
 function Control:addNegativeButtonDetector(f)
   table.insert(self._detectors, function()
-    if f() then
-      return -1
-    else
-      return 0
-    end
+    return f() and -1 or 0
   end)
 end
 
 function Control:addButtonPair(negative, positive)
   table.insert(self._detectors, function()
     local n, p = negative(), positive()
-    if n and p then
-      return 0
-    elseif n then
-      return -1
-    elseif p then
-      return 1
-    else
-      return 0
-    end
+    return n and p and 0
+    or n and -1
+    or n and 1
+    or 0
   end)
 end
 
@@ -69,39 +52,18 @@ function Control:getValue()
 end
 
 function Control:isDown(dir)
-  if self:getValue() == 0 then
-    return false
-  end
-  if dir then
-    if sign(self:getValue()) ~= sign(dir) then
-      return false
-    end
-  end
-  return true
+  local value = self:getValue()
+  return dir and sign(value) == sign(dir) or value ~= 0
 end
 
 function Control:pressed(dir)
-  if self._currentValue == 0 or self._previousValue ~= 0 then
-    return false
-  end
-  if dir then
-    if sign(self._currentValue) ~= sign(dir) then
-      return false
-    end
-  end
-  return true
+  return dir and sign(self._currentValue) == sign(dir)
+  or not (self._currentValue == 0 or self._previousValue ~= 0)
 end
 
 function Control:released(dir)
-  if self._previousValue == 0 or self._currentValue ~= 0 then
-    return false
-  end
-  if dir then
-    if sign(self._previousValue) ~= sign(dir) then
-      return false
-    end
-  end
-  return true
+  return dir and sign(self._previousValue) == sign(dir)
+  or not (self._previousValue == 0 or self._currentValue ~= 0)
 end
 
 function Control:update()
