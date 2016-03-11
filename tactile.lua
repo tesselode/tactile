@@ -32,7 +32,7 @@ function Control:addButtonPair(negative, positive)
     local n, p = negative(), positive()
     return n and p and 0
     or n and -1
-    or n and 1
+    or p and 1
     or 0
   end)
   return self
