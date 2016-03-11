@@ -15,18 +15,18 @@ function love.load()
   tactile = require 'tactile'
 
   --button detectors
-  keyboardLeft  = tactile.key('left')
-  keyboardRight = tactile.key('right')
-  keyboardX     = tactile.key('x')
-  gamepadA      = tactile.gamepadButton('a', 1) --the second argument is controller number, in case you're wondering
+  keyboardLeft  = tactile.keys('left', 'a')
+  keyboardRight = tactile.keys('right', 'd')
+  keyboardShoot = tactile.keys('x', 'space')
+  gamepadShoot  = tactile.gamepadButton(1, 'a', 'x') -- first argument is the gamepad ID
 
   --axis detectors
-  keyboardXAxis = tactile.binaryAxis(keyboardLeft, keyboardRight)
-  gamepadXAxis  = tactile.analogStick('leftx', 1)
+  keyboardMovement = tactile.binaryAxis(keyboardLeft, keyboardRight)
+  gamepadMovement  = tactile.analogStick(1, 'leftx')
 
   --controls
-  horizontal    = tactile.newAxis(keyboardXAxis, gamepadXAxis)
-  shoot         = tactile.newButton(keyboardX, gamepadA)
+  movement = tactile.newAxis(keyboardMovement, gamepadMovement)
+  shoot    = tactile.newButton(keyboardShoot, gamepadShoot)
 end
 
 function love.update(dt)
@@ -63,24 +63,30 @@ end
 
 Tactile comes with a few functions that create some commonly used button detectors. They cover all the use cases I could think of, but you can always make a custom button detector if need be.
 
-`detector = tactile.key(key)`
+`detector = tactile.keys(...)`
 
-Creates a button detector that is activated if a keyboard key is held down.
+Creates a button detector that is activated if any of the keyboard keys are held down.
 
-- `key` is the `KeyConstant` to check for.
+- `...` are the `KeyConstant`s to check for.
 
-`detector = tactile.gamepadButton(button, gamepadNum)`
+`detector = tactile.scancodes(...)`
 
-Creates a button detector that is activated if a gamepad button is held down.
+Creates a button detector that is activated if any of the keyboard keys are held down.
 
-- `button` is the `GamepadButton` to check for.
+- `...` are the `Scancode`s to check for.
+
+`detector = tactile.gamepadButton(gamepadNum, ...)`
+
+Creates a button detector that is activated if any of the gamepad buttons are held down.
+
 - `gamepadNum` is the number of the gamepad that should be checked.
+- `...` are the `GamepadButton`s to check for.
 
-`detector = tactile.mouseButton(button)`
+`detector = tactile.mouseButton(...)`
 
-Creates a button detector that is activated if a mouse button is held down.
+Creates a button detector that is activated if any of the mouse buttons are held down.
 
-- `button` is the `MouseConstant` to check for.
+- `...` are the `MouseConstant`s to check for.
 
 `detector = tactile.thresholdButton(axisDetector, threshold)`
 
@@ -139,12 +145,12 @@ end
 
 Tactile comes with a few functions that create some commonly used axis detectors.
 
-`detector = tactile.analogStick(axis, gamepadNum)`
+`detector = tactile.gamepadAxis(gamepadNum, axis)`
 
-Creates an axis detector that responds to an analog stick.
+Creates an axis detector that responds to a gamepad axis.
 
-- `axis` is the `GamepadAxis` to check for.
 - `gamepadNum` is the number of the gamepad that should be checked.
+- `axis` is the `GamepadAxis` to check for.
 
 `detector = tactile.binaryAxis(negative, positive)`
 
@@ -152,6 +158,14 @@ Creates an axis detector that responds to two button detectors. If both or neith
 
 - `negative` is the button detector on the negative side.
 - `positive` is the button detector on the positive side.
+
+`detector = tactile.booleanAxis(buttonDetector, whenTrue, whenFalse)`
+
+Creates an axis detector that reports a value depending on the button detector's state, similarly to `tactile.binaryAxis`. This allows you to report any value given any other kind of input.
+
+- `buttonDetector` is a button detector.
+- `whenTrue` is the axis value set when the button detector is down.
+- `whenFalse` is the axis value set when the button detector is not down.
 
 ###Axes
 
