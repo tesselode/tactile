@@ -1,14 +1,5 @@
 local tactile = {}
 
-local function any(t, f)
-  for i = 1, #t do
-    if f(t[i]) then
-      return true
-    end
-  end
-  return false
-end
-
 local function sign(x)
   return x < 0 and -1 or x > 0 and 1 or 0
 end
