@@ -36,7 +36,7 @@ function Control:addButtonPair(negative, positive)
   return self
 end
 
-function Control:getValue()
+function Control:_calculateValue()
   for i = #self._detectors, 1, -1 do
     local value = self._detectors[i]()
     if math.abs(value) > self.deadzone then
@@ -44,6 +44,10 @@ function Control:getValue()
     end
   end
   return 0
+end
+
+function Control:getValue()
+  return self._currentValue
 end
 
 function Control:isDown(dir)
@@ -63,7 +67,7 @@ end
 
 function Control:update()
   self._previousValue = self._currentValue
-  self._currentValue = self:getValue()
+  self._currentValue = self:_calculateValue()
 end
 
 function tactile.newControl()
