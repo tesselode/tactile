@@ -17,7 +17,12 @@ function love.load()
       :addButton(tactile.keys 'x')
   }
 
-  player = {pos = vector(400, 300), speed = 400}
+  player = {
+    pos = vector(400, 300),
+    speed = 400,
+    cooldown = 0.15,
+    cooldownTimer = 0.15,
+  }
   bullets = {}
 end
 
@@ -36,8 +41,10 @@ function love.update(dt)
   player.pos = player.pos + player.speed * inputVector * dt
 
   -- player shooting
-  if Control.Fire:pressed() then
+  player.cooldownTimer = player.cooldownTimer - dt
+  if Control.Fire:isDown() and player.cooldownTimer < 0 then
     table.insert(bullets, {pos = player.pos:clone(), speed = 800})
+    player.cooldownTimer = player.cooldown
   end
 
   -- update bullets
