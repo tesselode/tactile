@@ -2,6 +2,7 @@ local tactile = require 'tactile'
 local vector = require 'vector'
 
 function love.load()
+  -- set up controls
   Control = {
     Horizontal = tactile.newControl()
       :addAxis(tactile.gamepadAxis(1, 'leftx'))
@@ -17,22 +18,48 @@ function love.load()
   }
 
   player = {pos = vector(400, 300), speed = 400}
+  bullets = {}
 end
 
 function love.update(dt)
+  -- update controls
   for _, control in pairs(Control) do
     control:update()
   end
 
+  -- player movement
   local inputVector = vector(Control.Horizontal:getValue(),
     Control.Vertical:getValue())
   if inputVector:len() > 1 then
     inputVector:normalizeInplace()
   end
-
   player.pos = player.pos + player.speed * inputVector * dt
+
+  -- player shooting
+  if Control.Fire:pressed() then
+    table.insert(bullets, {pos = player.pos:clone(), speed = 800})
+  end
+
+  -- update bullets
+  for i = #bullets, 1, -1 do
+    local bullet = bullets[i]
+    bullet.pos.y = bullet.pos.y - bullet.speed * dt
+    if bullet.pos.y < -50 then
+      bullet.dead = true
+    end
+    if bullet.dead then
+      table.remove(bullets, i)
+    end
+  end
 end
 
 function love.draw()
+  -- draw player
   love.graphics.circle('fill', player.pos.x, player.pos.y, 16, 100)
+
+  -- draw bullets
+  for i = 1, #bullets do
+    local bullet = bullets[i]
+    love.graphics.circle('fill', bullet.pos.x, bullet.pos.y, 4, 100)
+  end
 end
