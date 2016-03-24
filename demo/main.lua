@@ -33,8 +33,7 @@ function love.update(dt)
   end
 
   -- player movement
-  local inputVector = vector(Control.Horizontal:getValue(),
-    Control.Vertical:getValue())
+  local inputVector = vector(Control.Horizontal(), Control.Vertical())
   if inputVector:len() > 1 then
     inputVector:normalizeInplace()
   end

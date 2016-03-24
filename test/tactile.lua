@@ -78,7 +78,13 @@ function tactile.newControl()
     _previousValue = 0,
   }
 
-  setmetatable(control, {__index = Control})
+  setmetatable(control, {
+    __index = Control,
+    __call = function(t)
+      return t:getValue()
+    end
+  })
+
   return control
 end
 

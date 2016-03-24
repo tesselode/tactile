@@ -52,11 +52,11 @@ local function test_buttonBehavior()
 end
 
 -- test: update functionality
-local function test_Update()
+local function test_update()
   horizontal:update()
   assert(horizontal._currentValue == -.8)
   assert(horizontal._previousValue == 0)
-  
+
   leftStick = 0
   horizontal:update()
   assert(horizontal._currentValue == 0)
@@ -68,11 +68,13 @@ local function test_getValue()
   leftStick = .8
   horizontal:update()
   assert(horizontal:getValue() == .8)
+  assert(horizontal() == horizontal:getValue())
 end
 
 -- test: isDown/pressed/released
 local function test_isDownPressedReleased()
   leftStick = 0
+  horizontal:update()
   horizontal:update()
   assert(not horizontal:isDown())
   assert(not horizontal:pressed())
