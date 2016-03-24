@@ -63,6 +63,13 @@ local function test_Update()
   assert(horizontal._previousValue == -.8)
 end
 
+-- test: getValue function
+local function test_getValue()
+  leftStick = .8
+  horizontal:update()
+  assert(horizontal:getValue() == .8)
+end
+
 -- test: isDown/pressed/released
 local function test_isDownPressedReleased()
   leftStick = 0
