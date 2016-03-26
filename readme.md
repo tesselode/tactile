@@ -21,6 +21,14 @@ function love.update(dt)
 end
 ```
 
+Table of contents
+-----------------
+- [Overview](#overview)
+- [Usage](#usage)
+- [API](#api)
+- [License](#license)
+
+<a name="overview"/>
 Overview
 --------
 Tactile has two types of objects:
@@ -97,13 +105,15 @@ if Control.Vertical:pressed(1) then
 end
 ```
 
-Installation
+<a name="usage"/>
+Usage
 ------------
 Place tactile.lua somewhere in your project. To use it, do:
 ```lua
 local tactile = require 'path.to.tactile'
 ```
 
+<a name="api"/>
 API
 ---
 ### Controls
@@ -162,6 +172,7 @@ Returns an axis detector that returns the value of the specified gamepad axis.
 - `num` (number) - the number of the controller to check.
 - `axis` (string) - the gamepad axis to check.
 
+<a name="license"/>
 License
 -------
 Tactile is licensed under the MIT license.
