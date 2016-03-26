@@ -177,8 +177,6 @@ License
 -------
 Tactile is licensed under the MIT license.
 
-> MIT License
->
 > Copyright (c) 2016 Andrew Minnich
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
