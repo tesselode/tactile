@@ -7,23 +7,14 @@ Tactile is an input library for LÖVE that bridges the gap between different inp
 Control = {
   Horizontal = tactile.newControl()
     :addAxis(tactile.gamepadAxis(1, 'leftx'))
-    :addButtonPair(tactile.keys('a', 'left'), tactile.keys('d', 'right')),
-  Vertical = tactile.newControl()
-    :addAxis(tactile.gamepadAxis(1, 'lefty'))
-    :addButtonPair(tactile.keys('w', 'up'), tactile.keys('s', 'down')),
+    :addButtonPair(tactile.keys 'left', tactile.keys 'right'),
   Fire = tactile.newControl()
-    :addAxis(tactile.gamepadAxis(1, 'triggerleft'))
-    :addAxis(tactile.gamepadAxis(1, 'triggerright'))
     :addButton(tactile.gamepadButtons(1, 'a'))
     :addButton(tactile.keys 'x')
 }
 
 function love.update(dt)
-  -- movement - using axis inputs
-  local inputVector = vector(Control.Horizontal(), Control.Vertical())
-  player.pos = player.pos + player.speed * inputVector * dt
-
-  -- firing - using button inputs
+  player.x = player.x + player.speed * Control.Horizontal() * dt
   if Control.Fire:isDown() then
     player:shoot()
   end
