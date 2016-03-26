@@ -115,36 +115,58 @@ local tactile = require 'path.to.tactile'
 
 API
 ---
-### `Control = tactile.newControl()`
+### Controls
+
+#### `Control = tactile.newControl()`
 Creates and returns a new control.
 
-### `Control:addAxis(f)`
+Controls have the following properties:
+- `deadzone` (number) - the deadzone amount. Detectors with an absolute value less than the deadzone will be ignored.
+
+#### `Control:addAxis(f)`
 Adds an axis detector to the control.
 - `f` (function) - an axis detector. Axis detectors are functions that return a number between -1 and 1.
 
-### `Control:addButton(f)`
+#### `Control:addButton(f)`
 Adds a button detector to the control.
-- `f` (function) - a button detector. Button detectors are functions that return a boolean value.
+- `f` (function) - a button detector. Button detectors are functions that return `true` or `false`.
 
-### `Control:addButtonPair(negative, positive)`
-Adds a pair of button detectors to the control. The negative button detector will be mapped to -1, and the positive button detector will be mapped to 1.
+#### `Control:addButtonPair(negative, positive)`
+Adds a button pair detector to the control, which is generated from two button detectors. The negative button detector will be mapped to -1, and the positive button detector will be mapped to 1.
 - `negative` (function) - the negative button detector.
 - `positive` (function) - the positive button detector.
 
-### `Control:getValue()`
-Returns the current axis value of the control. The control checks each axis and button detector in the order they were added. Any detector that has a non-zero value will overwrite the previous one, so the detector that should have the highest precedence should be added last. Button detectors are mapped to 1, and button pairs are mapped to -1 and 1.
+#### `Control:getValue()`
+Returns the current axis value of the control. As a shortcut, you can simply call `Control()`, which returns `Control:getValue()`.
 
-### ```Control:isDown(dir)```
+#### ```Control:isDown(dir)```
 Returns whether the control is down or not. The control is considered to be down if its absolute value is greater than the deadzone.
-- `dir` (optional) - set this to -1 or 1 to check if the control is down in a certain direction. For example, if the control has a button pair detector where the negative button is the left arrow key and the positive button is the right arrow key, `Control:isDown(-1)` will only return true if the left arrow key is down.
+- `dir` (optional) - set this to -1 or 1 to check if the control is down in a certain direction.
 
-### ```Control:pressed(dir)```
+#### ```Control:pressed(dir)```
 Returns whether the control was pressed this frame.
 - `dir` (optional) - the direction to check.
 
-### ```Control:released(dir)```
+#### ```Control:released(dir)```
 Returns whether the control was released this frame.
 - `dir` (optional) - the direction to check.
 
-### ```Control:upate()```
+#### ```Control:update()```
 Updates the state of the control. Call this on all of your controls each frame. Sorry you have to do this. :(
+
+### Detectors
+Since detectors are just functions, you could write your own (and in some cases, you might want to). However, Tactile provides built-in detectors that should cover all the common use cases.
+
+#### `tactile.keys(...)`
+Returns a button detector that returns true if any of the specified keys are down.
+- `...` (strings) - a list of keys to check for.
+
+#### `tactile.gamepadButtons(num, ...)`
+Returns a button detector that returns true if any of the specified gamepad buttons are held down.
+- `num` (number) - the number of the controller to check.
+- `...` (strings) - a list of gamepad buttons to check for.
+
+#### `tactile.gamepadAxis(num, axis)`
+Returns an axis detector that returns the value of the specified gamepad axis.
+- `num` (number) - the number of the controller to check.
+- `axis` (string) - the gamepad axis to check.
