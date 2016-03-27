@@ -34,7 +34,7 @@ Overview
 Tactile has two types of objects:
 - **Controls**: A control represents a distinct action in the game. For example, you might make "horizontal" and "vertical" controls for movement using the arrow keys or analog stick, and "primary" and "secondary" controls for the A and B button.
 - **Detectors**: A detector is a function that checks for a certain kind of input. These are split up into three types:
-  - **Axis detectors**: An axis detector checks for an analog input. For example, a function that returned the value of a `GamepadAxis` would be an axis detector.
+  - **Axis detectors**: An axis detector checks for an analog input. For example, a function that returned the value of a gamepad axis would be an axis detector.
   - **Button detectors**: A button detector checks the state of a single button.
   - **Button pair detectors**: A button pair detector uses two buttons to represent an axis. One button represents the negative end of an axis, and the other represents the positive end.
 
@@ -76,7 +76,7 @@ player.x = player.x + Control.Horizontal:getValue() * player.speed * dt
 player.y = player.y + Control.Vertical:getValue() * player.speed * dt
 ```
 
-Since `Contol:getValue()` always returns a number between -1 and 1, the player will move at a speed and in a direction that makes sense given the input.
+Since `Control:getValue()` always returns a number between -1 and 1, the player will move at a speed and in a direction that makes sense given the input.
 
 Now let's think about shooting. This is something that's handled by a button input. We'll use the `Fire` control:
 
