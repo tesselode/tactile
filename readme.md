@@ -14,6 +14,9 @@ Control = {
 }
 
 function love.update(dt)
+  Control.Horizontal:update()
+  Control.Fire:update()
+
   player.x = player.x + player.speed * Control.Horizontal() * dt
   if Control.Fire:isDown() then
     player:shoot()
