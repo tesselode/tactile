@@ -1,184 +1,201 @@
 Tactile
 =======
-Tactile is a flexible and straightforward input library for LÖVE to help you manage multiple input sources.
 
-If you want to use the library in your game, just grab tactile.lua and you're good to go! For an interactive example (that also acts as a test kind of sort of), clone the repo and run love in the project folder.
+Tactile is an input library for LÖVE that bridges the gap between different input methods and types. In Tactile, there is no distinction between buttons and analog controls - controls are both buttons and axes at the same time.
 
-Overview
---------
-The two main objects in Tactile are **buttons** and **axes**. Buttons and axes are operated by a group of **detectors**, which are really just functions that return a value. Button detectors return true or false, and axis detectors return a number from -1 to 1. That's really abstract, so here's an example:
-
-Example
--------
 ```lua
-function love.load()
-  tactile = require 'tactile'
-
-  --button detectors
-  keyboardLeft  = tactile.key('left')
-  keyboardRight = tactile.key('right')
-  keyboardX     = tactile.key('x')
-  gamepadA      = tactile.gamepadButton('a', 1) --the second argument is controller number, in case you're wondering
-
-  --axis detectors
-  keyboardXAxis = tactile.binaryAxis(keyboardLeft, keyboardRight)
-  gamepadXAxis  = tactile.analogStick('leftx', 1)
-
-  --controls
-  horizontal    = tactile.newAxis(keyboardXAxis, gamepadXAxis)
-  shoot         = tactile.newButton(keyboardX, gamepadA)
-end
+Control = {
+  Horizontal = tactile.newControl()
+    :addAxis(tactile.gamepadAxis(1, 'leftx'))
+    :addButtonPair(tactile.keys 'left', tactile.keys 'right'),
+  Fire = tactile.newControl()
+    :addButton(tactile.gamepadButtons(1, 'a'))
+    :addButton(tactile.keys 'x')
+}
 
 function love.update(dt)
-  --you have to update buttons, sorry for the extra step :(
-  shoot:update()
+  Control.Horizontal:update()
+  Control.Fire:update()
 
-  --movement
-  player.x = player.x + player.speed * horizontal:getValue() * dt
-
-  --shooting
-  if shoot:pressed() then
+  player.x = player.x + player.speed * Control.Horizontal() * dt
+  if Control.Fire:isDown() then
     player:shoot()
   end
 end
 ```
 
+Table of contents
+-----------------
+- [Overview](#overview)
+- [Usage](#usage)
+- [API](#api)
+- [License](#license)
+
+<a name="overview"/>
+Overview
+--------
+Tactile has two types of objects:
+- **Controls**: A control represents a distinct action in the game. For example, you might make "horizontal" and "vertical" controls for movement using the arrow keys or analog stick, and "primary" and "secondary" controls for the A and B button.
+- **Detectors**: A detector is a function that checks for a certain kind of input. These are split up into three types:
+  - **Axis detectors**: An axis detector checks for an analog input. For example, a function that returned the value of a gamepad axis would be an axis detector.
+  - **Button detectors**: A button detector checks the state of a single button.
+  - **Button pair detectors**: A button pair detector uses two buttons to represent an axis. One button represents the negative end of an axis, and the other represents the positive end.
+
+### Controls
+Controls contain a series of detectors and use them to act as both a button and an axis. The most important function is `Control:getValue`, which runs through all of the detectors in order and uses them to calculate a value between -1 and 1.
+- If the detector is an axis detector, the resulting value will be whatever number the axis detector returns.
+- If the detector is a button detector, the resulting value will be 0 if the button detector returns `false` and 1 if the button detector returns `true`.
+- If the detector is a button pair detector...
+  - If both or neither the negative and positive detectors return `true`, the resulting value will be 0.
+  - If only the negative detector returns `true`, the resulting value will be -1.
+  - If only the positive detector returns `true`, the resulting value will be 1.
+- Each detector will override the values of the previous one as long as they are non-zero (i.e., their absolute value is greater than the deadzone)
+
+Controls also act as buttons, so they can be "down" or not "down". They're considered to be "down" if `Control:getValue` is a non-zero number. Furthermore, controls can be "down" in a certain direction, meaning `Control:getValue` is less than `-deadzone` or greater than `deadzone`. They also keep track of whether they were pressed or released in the current frame.
+
+### Examples
+That was all very abstract. What does this mean? Well, here are some examples of common ways to use Tactile. For these examples, let's assume that we've set up the controls like this:
+
+```lua
+Control = {
+  Horizontal = tactile.newControl()
+    :addAxis(tactile.gamepadAxis(1, 'leftx'))
+    :addButtonPair(tactile.keys('a', 'left'), tactile.keys('d', 'right')),
+  Vertical = tactile.newControl()
+    :addAxis(tactile.gamepadAxis(1, 'lefty'))
+    :addButtonPair(tactile.keys('w', 'up'), tactile.keys('s', 'down')),
+  Fire = tactile.newControl()
+    :addAxis(tactile.gamepadAxis(1, 'triggerleft'))
+    :addAxis(tactile.gamepadAxis(1, 'triggerright'))
+    :addButton(tactile.gamepadButtons(1, 'a'))
+    :addButton(tactile.keys 'x')
+}
+```
+
+First, let's think about movement. This is the perfect time to use controls like axes. The `Horizontal` and `Vertical` controls have the left analog stick, arrow keys, and WASD mapped to them, so you can easily do something like this:
+
+```lua
+player.x = player.x + Control.Horizontal:getValue() * player.speed * dt
+player.y = player.y + Control.Vertical:getValue() * player.speed * dt
+```
+
+Since `Control:getValue()` always returns a number between -1 and 1, the player will move at a speed and in a direction that makes sense given the input.
+
+Now let's think about shooting. This is something that's handled by a button input. We'll use the `Fire` control:
+
+```lua
+if Control.Fire:isDown() then
+  player:shoot()
+end
+```
+
+That's all we have to do! The `Fire` control has the `X` key, `A` button on the gamepad, and left and right triggers mapped to it. If `X` or `A` are pushed down, or if either trigger is pushed down more than halfway, the `Control.Fire` will register as being pushed down.
+
+One more example: menu controls. This is the sneaky one! It's obvious to use `Horizontal` and `Vertical` as axes and `Fire` as a button, but for menus, we need to use the analog stick and the arrow keys as button presses to move a cursor around. But since controls are both axes and buttons, this is already set up for us. We'll use the `dir` argument of `Control:pressed` to detect button presses in certain directions.
+
+```lua
+if Control.Horizontal:pressed(-1) then
+  -- move the cursor to the left
+end
+if Control.Horizontal:pressed(1) then
+  -- move the cursor to the right
+end
+if Control.Vertical:pressed(-1) then
+  -- move the cursor up
+end
+if Control.Vertical:pressed(1) then
+  -- move the cursor down
+end
+```
+
+<a name="usage"/>
+Usage
+------------
+Place tactile.lua somewhere in your project. To use it, do:
+```lua
+local tactile = require 'path.to.tactile'
+```
+
+<a name="api"/>
 API
 ---
-###Requiring the library
+### Controls
 
-`tactile = require 'tactile'`
+#### `Control = tactile.newControl()`
+Creates and returns a new control.
 
-What do you know, it's just like every other library!
+Controls have the following properties:
+- `deadzone` (number) - the deadzone amount. Detectors with an absolute value less than the deadzone will be ignored.
 
-###Button detectors
+#### `Control:addAxis(f)`
+Adds an axis detector to the control.
+- `f` (function) - an axis detector. Axis detectors are functions that return a number between -1 and 1.
 
-A button detector is simply a function that returns true or false. Each button detector represents a single source of binary input, like a keyboard key or gamepad button. For example, here is a completely valid button detector:
+#### `Control:addButton(f)`
+Adds a button detector to the control.
+- `f` (function) - a button detector. Button detectors are functions that return `true` or `false`.
 
-```lua
-detector = function()
-  return love.keyboard.isDown('left')
-end
-```
+#### `Control:addButtonPair(negative, positive)`
+Adds a button pair detector to the control, which is generated from two button detectors. The negative button detector will be mapped to -1, and the positive button detector will be mapped to 1.
+- `negative` (function) - the negative button detector.
+- `positive` (function) - the positive button detector.
 
-Tactile comes with a few functions that create some commonly used button detectors. They cover all the use cases I could think of, but you can always make a custom button detector if need be.
+#### `Control:getValue()`
+Returns the current axis value of the control. As a shortcut, you can simply call `Control()`, which returns `Control:getValue()`.
 
-`detector = tactile.key(key)`
+#### ```Control:isDown(dir)```
+Returns whether the control is down or not. The control is considered to be down if its absolute value is greater than the deadzone.
+- `dir` (optional) - set this to -1 or 1 to check if the control is down in a certain direction.
 
-Creates a button detector that is activated if a keyboard key is held down.
+#### ```Control:pressed(dir)```
+Returns whether the control was pressed this frame.
+- `dir` (optional) - the direction to check.
 
-- `key` is the `KeyConstant` to check for.
+#### ```Control:released(dir)```
+Returns whether the control was released this frame.
+- `dir` (optional) - the direction to check.
 
-`detector = tactile.gamepadButton(button, gamepadNum)`
+#### ```Control:update()```
+Updates the state of the control. Call this on all of your controls each frame. Sorry you have to do this. :(
 
-Creates a button detector that is activated if a gamepad button is held down.
+### Detectors
+Since detectors are just functions, you could write your own (and in some cases, you might want to). However, Tactile provides built-in detectors that should cover all the common use cases.
 
-- `button` is the `GamepadButton` to check for.
-- `gamepadNum` is the number of the gamepad that should be checked.
+#### `tactile.keys(...)`
+Returns a button detector that returns true if any of the specified keys are down.
+- `...` (strings) - a list of keys to check for.
 
-`detector = tactile.mouseButton(button)`
+#### `tactile.gamepadButtons(num, ...)`
+Returns a button detector that returns true if any of the specified gamepad buttons are held down.
+- `num` (number) - the number of the controller to check.
+- `...` (strings) - a list of gamepad buttons to check for.
 
-Creates a button detector that is activated if a mouse button is held down.
+#### `tactile.gamepadAxis(num, axis)`
+Returns an axis detector that returns the value of the specified gamepad axis.
+- `num` (number) - the number of the controller to check.
+- `axis` (string) - the gamepad axis to check.
 
-- `button` is the `MouseConstant` to check for.
+<a name="license"/>
+License
+-------
+Tactile is licensed under the MIT license.
 
-`detector = tactile.thresholdButton(axisDetector, threshold)`
-
-Creates a button detector that is activated if the value of an axis detector passes a certain threshold. This is useful if you want an analog input to control a binary control (for example, using an analog stick to navigate a menu). You can also use this to tack controller support onto a game that only has keyboard controls, but in my heart, I know you can do better. :)
-
-- `axisDetector` is the axis detector to check.
-- `threshold` is the threshold the axis detector has to pass for the button detector to be activated. This is sensitive to sign.
-
-###Buttons
-
-Buttons are containers for button detectors. If any of the button detectors are activated, the button will be activated. As well as reporting if they are held down, buttons also keep track of whether they were just pressed or released on the current frame.
-
-`button = tactile.newButton(...)`
-
-Creates a new button.
-
-- `...` is a list of button detectors the button should use.
-
-`button:update()`
-
-Updates the button. Call this once per frame. Sorry you have to do this.
-
-`button:addDetector(detector)`
-
-Adds a button detector to the button.
-
-- `detector` is the button detector to add.
-
-`button:removeDetector(detector)`
-
-Removes a button detector from the button.
-
-- `detector` is the button detector to remove.
-
-`button:isDown()`
-
-Returns whether the button is currently being held down.
-
-`button:pressed()`
-
-Returns whether the button was just pressed this frame.
-
-`button:released()`
-
-Returns whether the button was just released this frame.
-
-###Axis detectors
-
-An axis detector is simply a function that returns a number from -1 to 1. Each axis detector represents a single analog control, like an analog stick on a gamepad. For example, here is a valid axis detector:
-
-```lua
-detector = function()
-  return love.joystick.getJoysticks()[1]:getGamepadAxis('leftx')
-end
-```
-
-Tactile comes with a few functions that create some commonly used axis detectors.
-
-`detector = tactile.analogStick(axis, gamepadNum)`
-
-Creates an axis detector that responds to an analog stick.
-
-- `axis` is the `GamepadAxis` to check for.
-- `gamepadNum` is the number of the gamepad that should be checked.
-
-`detector = tactile.binaryAxis(negative, positive)`
-
-Creates an axis detector that responds to two button detectors. If both or neither button detectors are activated, the returned value will be 0. If only the negative button detector is activated, the returned value will be -1. If only the positive button detector is activated, the returned value will be 1. This is useful for mapping binary controls to something that is normally operated by an axis, like keyboard controls for a game that is designed for the analog stick.
-
-- `negative` is the button detector on the negative side.
-- `positive` is the button detector on the positive side.
-
-###Axes
-
-Axes are containers for axis detectors. The value of the axis will be set to the last non-zero value from the list of axis detectors (accounting for deadzone). You should consider which input methods you want to take precedence to decide the order to add axis detectors in.
-
-You can change the deadzone of the axis by setting `axis.deadzone`. Each axis has an individual deadzone setting. By default, it is 0.5.
-
-`axis = tactile.newAxis(...)`
-
-Creates a new axis.
-
-- `...` is a list of axis detectors the axis should use.
-
-`axis:addDetector(detector)`
-
-Adds an axis detector to the axis.
-
-- `detector` is the axis detector to add.
-
-`axis:removeDetector(detector)`
-
-Removes an axis detector from the axis.
-
-- `detector` is the axis detector to remove.
-
-`axis:getValue(deadzone)`
-
-Returns the current value of the axis.
-
-- `deadzone` is the deadzone to use. Leave this blank to use `axis.deadzone`.
+> Copyright (c) 2016 Andrew Minnich
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all
+> copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+> SOFTWARE.
