@@ -95,16 +95,16 @@ One more example: menu controls. This is the sneaky one! It's obvious to use `Ho
 
 ```lua
 if Control.Horizontal:pressed(-1) then
-  // move the cursor to the left
+  -- move the cursor to the left
 end
 if Control.Horizontal:pressed(1) then
-  // move the cursor to the right
+  -- move the cursor to the right
 end
 if Control.Vertical:pressed(-1) then
-  // move the cursor up
+  -- move the cursor up
 end
 if Control.Vertical:pressed(1) then
-  // move the cursor down
+  -- move the cursor down
 end
 ```
 
