@@ -142,7 +142,8 @@ function tactile.gamepadButtons(num, ...)
       'GamepadButton (string)')
   end
   return function()
-    return love.joystick.getJoysticks()[num]:isGamepadDown(unpack(buttons))
+    local joystick = love.joystick.getJoysticks()[num]
+    return joystick ~= nil and joystick:isGamepadDown(unpack(buttons))
   end
 end
 
@@ -150,7 +151,8 @@ function tactile.gamepadAxis(num, axis)
   verify('tactile.gamepadAxis()', 1, num, 'number')
   verify('tactile.gamepadAxis()', 2, axis, 'string', 'GamepadAxis (string)')
   return function()
-    return love.joystick.getJoysticks()[num]:getGamepadAxis(axis)
+    local joystick = love.joystick.getJoysticks()[num]
+    return joystick ~= nil and joystick:getGamepadAxis(axis) or 0
   end
 end
 
