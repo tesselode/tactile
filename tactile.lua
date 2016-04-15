@@ -76,18 +76,30 @@ function Control:getValue()
 end
 
 function Control:isDown(dir)
-  local value = self._currentValue
-  return dir and sign(value) == sign(dir) or value ~= 0
+  if dir then
+    return sign(self._currentValue) == sign(dir)
+  end
+  return self._currentValue ~= 0
 end
 
 function Control:pressed(dir)
-  return dir and sign(self._currentValue) == sign(dir)
-    or self._previousValue == 0 and self._currentValue ~= 0
+  if dir then
+    dir = sign(dir)
+    return sign(self._currentValue) == dir
+      and sign(self._previousValue) ~= dir
+  end
+  return self._currentValue ~= 0
+    and self._previousValue == 0
 end
 
 function Control:released(dir)
-  return dir and sign(self._previousValue) == sign(dir)
-    or self._previousValue ~= 0 and self._currentValue == 0
+  if dir then
+    dir = sign(dir)
+    return sign(self._currentValue) ~= dir
+      and sign(self._previousValue) == dir
+  end
+  return self._currentValue == 0
+    and self._previousValue ~= 0
 end
 
 function Control:update()
