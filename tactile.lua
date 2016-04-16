@@ -76,18 +76,30 @@ function Control:getValue()
 end
 
 function Control:isDown(dir)
-  local value = self:getValue()
-  return dir and sign(value) == sign(dir) or value ~= 0
+  if dir then
+    return sign(self._currentValue) == sign(dir)
+  end
+  return self._currentValue ~= 0
 end
 
 function Control:pressed(dir)
-  return dir and sign(self._currentValue) == sign(dir)
-    or not (self._currentValue == 0 or self._previousValue ~= 0)
+  if dir then
+    dir = sign(dir)
+    return sign(self._currentValue) == dir
+      and sign(self._previousValue) ~= dir
+  end
+  return self._currentValue ~= 0
+    and self._previousValue == 0
 end
 
 function Control:released(dir)
-  return dir and sign(self._previousValue) == sign(dir)
-    or not (self._previousValue == 0 or self._currentValue ~= 0)
+  if dir then
+    dir = sign(dir)
+    return sign(self._currentValue) ~= dir
+      and sign(self._previousValue) == dir
+  end
+  return self._currentValue == 0
+    and self._previousValue ~= 0
 end
 
 function Control:update()
@@ -130,7 +142,8 @@ function tactile.gamepadButtons(num, ...)
       'GamepadButton (string)')
   end
   return function()
-    return love.joystick.getJoysticks()[num]:isGamepadDown(unpack(buttons))
+    local joystick = love.joystick.getJoysticks()[num]
+    return joystick ~= nil and joystick:isGamepadDown(unpack(buttons))
   end
 end
 
@@ -138,7 +151,8 @@ function tactile.gamepadAxis(num, axis)
   verify('tactile.gamepadAxis()', 1, num, 'number')
   verify('tactile.gamepadAxis()', 2, axis, 'string', 'GamepadAxis (string)')
   return function()
-    return love.joystick.getJoysticks()[num]:getGamepadAxis(axis)
+    local joystick = love.joystick.getJoysticks()[num]
+    return joystick ~= nil and joystick:getGamepadAxis(axis) or 0
   end
 end
 
