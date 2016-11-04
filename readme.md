@@ -1,3 +1,5 @@
+For anyone coming here from awesome-love2d (or anywhere else), if you need an input library, give [Baton](https://github.com/tesselode/baton) a shot first! It's the successor to Tactile and is much better, at least in my opinion.
+
 Tactile
 =======
 
