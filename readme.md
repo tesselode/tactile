@@ -1,7 +1,6 @@
 For anyone coming here from awesome-love2d (or anywhere else), if you need an input library, give [Baton](https://github.com/tesselode/baton) a shot first! It's the successor to Tactile and is much better, at least in my opinion.
 
-Tactile
-=======
+# Tactile
 
 Tactile is an input library for LÖVE that bridges the gap between different input methods and types. In Tactile, there is no distinction between buttons and analog controls - controls are both buttons and axes at the same time.
 
@@ -26,16 +25,15 @@ function love.update(dt)
 end
 ```
 
-Table of contents
------------------
+## Table of contents
+
 - [Overview](#overview)
 - [Usage](#usage)
 - [API](#api)
 - [License](#license)
 
-<a name="overview"/>
-Overview
---------
+## Overview
+
 Tactile has two types of objects:
 - **Controls**: A control represents a distinct action in the game. For example, you might make "horizontal" and "vertical" controls for movement using the arrow keys or analog stick, and "primary" and "secondary" controls for the A and B button.
 - **Detectors**: A detector is a function that checks for a certain kind of input. These are split up into three types:
@@ -110,17 +108,15 @@ if Control.Vertical:pressed(1) then
 end
 ```
 
-<a name="usage"/>
-Usage
-------------
+## Usage
+
 Place tactile.lua somewhere in your project. To use it, do:
 ```lua
 local tactile = require 'path.to.tactile'
 ```
 
-<a name="api"/>
-API
----
+## API
+
 ### Controls
 
 #### `Control = tactile.newControl()`
@@ -177,9 +173,8 @@ Returns an axis detector that returns the value of the specified gamepad axis.
 - `num` (number) - the number of the controller to check.
 - `axis` (string) - the gamepad axis to check.
 
-<a name="license"/>
-License
--------
+## License
+
 Tactile is licensed under the MIT license.
 
 > Copyright (c) 2016 Andrew Minnich
